@@ -8,6 +8,7 @@ public class PauseMenuScript : MonoBehaviour
 {
     bool gamePaused = false;
     [SerializeField] GameObject pauseMenu;
+    [SerializeField] GameObject hud;
 
     void Update()
     {
@@ -16,18 +17,21 @@ public class PauseMenuScript : MonoBehaviour
             Time.timeScale = 0;
             gamePaused = true;
             pauseMenu.SetActive(true);
+            hud.SetActive(false);
         }
         else if ((Input.GetKeyDown(KeyCode.Escape) && gamePaused == true))
         {
             Time.timeScale = 1;
             gamePaused = false;
             pauseMenu.SetActive(false);
+            hud.SetActive(true);
         }
     }
 
     public void Pause()
     {
         pauseMenu.SetActive(true);
+        hud.SetActive(false);
     }
 
     public void Home()
@@ -40,5 +44,6 @@ public class PauseMenuScript : MonoBehaviour
         Time.timeScale = 1;
         gamePaused = false;
         pauseMenu.SetActive(false);
+        hud.SetActive(true);
     }
 }
