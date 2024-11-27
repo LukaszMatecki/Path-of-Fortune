@@ -17,6 +17,10 @@ public class VolumeSettings : MonoBehaviour
         }
         else
         {
+            masterSlider.value = 0.5f;
+            musicSlider.value = 0.5f;
+            SFXSlider.value = 0.5f;
+
             SetMasterVolume();
             SetMusicVolume();
             SetSFXVolume();
