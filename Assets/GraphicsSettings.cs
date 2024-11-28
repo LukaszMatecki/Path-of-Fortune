@@ -7,6 +7,7 @@ public class GraphicsSettings : MonoBehaviour
 {
     public TMP_Dropdown resolutionDropdown;
     public Toggle fullscreenToggle; // Toggle do obs³ugi trybu pe³noekranowego
+    public Toggle vSyncToggle; // Toggle do obs³ugi V-Sync
     private Resolution[] resolutions;
     private List<Resolution> uniqueResolutions = new List<Resolution>();
 
@@ -65,6 +66,10 @@ public class GraphicsSettings : MonoBehaviour
 
         // Listener do zmiany rozdzielczoœci w dropdownie
         resolutionDropdown.onValueChanged.AddListener(OnResolutionChanged);
+
+        // Ustawienie stanu Toggle V-Sync
+        vSyncToggle.isOn = QualitySettings.vSyncCount > 0;
+        vSyncToggle.onValueChanged.AddListener(OnVSyncToggleChanged);
     }
 
     // Funkcja do ustawienia rozdzielczoœci
@@ -107,5 +112,11 @@ public class GraphicsSettings : MonoBehaviour
     public void SetQuality(int qualityIndex)
     {
         QualitySettings.SetQualityLevel(qualityIndex);
+    }
+
+    // Funkcja wywo³ywana po zmianie stanu Toggle V-Sync
+    private void OnVSyncToggleChanged(bool isVSyncOn)
+    {
+        QualitySettings.vSyncCount = isVSyncOn ? 1 : 0;
     }
 }

@@ -10,6 +10,7 @@ public class TileSelector : MonoBehaviour
     public Animator characterAnimator;
     public Tilemap tilemapGround;  // Tilemap_Ground
     public Tilemap tilemapOverGround; // Tilemap_OverGround (przeszkody)
+    public bool isActive = true;
 
     private List<Tile> selectedTiles = new List<Tile>();
 
@@ -20,6 +21,7 @@ public class TileSelector : MonoBehaviour
 
     void Update()
     {
+        if (!isActive) return;
         if (Input.GetMouseButtonDown(0))
         {
             Debug.Log("LPM klikniêty - próba zaznaczenia pola.");

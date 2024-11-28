@@ -9,6 +9,7 @@ public class PauseMenuScript : MonoBehaviour
     bool gamePaused = false;
     [SerializeField] GameObject pauseMenu;
     [SerializeField] GameObject hud;
+    [SerializeField] TileSelector tileSelector;
 
     void Update()
     {
@@ -30,8 +31,11 @@ public class PauseMenuScript : MonoBehaviour
 
     public void Pause()
     {
+        Time.timeScale = 0;
+        gamePaused = true;
         pauseMenu.SetActive(true);
         hud.SetActive(false);
+        tileSelector.isActive = false;
     }
 
     public void Home()
@@ -45,5 +49,6 @@ public class PauseMenuScript : MonoBehaviour
         gamePaused = false;
         pauseMenu.SetActive(false);
         hud.SetActive(true);
+        tileSelector.isActive = true;
     }
 }
