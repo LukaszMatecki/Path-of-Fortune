@@ -13,14 +13,14 @@ namespace GG
         void Start()
         {
             ResetDeck();
-            PlayRandomCard();
+            //PlayRandomCard();
         }
 
-        public void PlayRandomCard()
+        public Card PlayRandomCard()
         {
             if (currentDeck.Count == 0)
             {
-                ResetDeck(); 
+                ResetDeck();
             }
 
             int randomIndex = Random.Range(0, currentDeck.Count);
@@ -32,13 +32,16 @@ namespace GG
                 CardPlaceholder.LoadCard(chosenCard);
             }
 
-            Debug.Log($"Zagrano kartê: {chosenCard.CardTitleText}. Pozosta³e karty w talii: {currentDeck.Count}");
+            Debug.Log($"Przeciwnik Zagra³ kartê: {chosenCard.CardTitleText}. Pozosta³e karty w talii przeciwnika: {currentDeck.Count}");
+
+            return chosenCard;
         }
-        
+
+
         private void ResetDeck()
         {
             currentDeck = new List<Card>(InitialDeck);
-            Debug.Log("Talia zosta³a zresetowana.");
+            Debug.Log("Talia przeciwnika zosta³a zresetowana.");
         }
     }
 }

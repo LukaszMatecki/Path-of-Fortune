@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.WSA;
 
 public class Tile : MonoBehaviour
 {
@@ -62,6 +63,33 @@ public class Tile : MonoBehaviour
         }
 
         Debug.Log("Brak przeszkody na polu: " + tilePosition);
+        return false;
+    }
+    public bool HasEnemy()
+    {
+        Vector3 tilePosition = transform.position;
+        Tilemap overGroundTilemap = GameObject.Find("Tilemap_OverGround").GetComponent<Tilemap>();
+
+        Vector3 worldPosition = overGroundTilemap.WorldToCell(tilePosition);
+        Collider[] colliders = Physics.OverlapBox(tilePosition, new Vector3(0.5f, 0.5f, 0.5f));
+
+        bool enemyFound = false;
+        foreach (var collider in colliders)
+        {
+            if (collider != null && collider.CompareTag("Enemy"))
+            {
+                enemyFound = true;
+                //Debug.Log("Przeciwnik wykryty na polu: " + tilePosition + ", Obiekt: " + collider.gameObject.name);
+            }
+        }
+
+        if (enemyFound)
+        {
+            //Debug.Log("Na polu: " + tilePosition + " znajduje siê Przeciwnik.");
+            return true;
+        }
+
+        //Debug.Log("Brak przeciwnika na polu: " + tilePosition);
         return false;
     }
 

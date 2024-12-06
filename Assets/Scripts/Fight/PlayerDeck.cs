@@ -5,13 +5,13 @@ namespace GG
 {
     public class PlayerDeck : MonoBehaviour
     {
-        public List<Card> InitialDeck; // Startowe karty
-        private List<Card> deck; // Aktualna talia
-        private List<Card> discardPile; // Stos kart odrzuconych
-        private List<Card> hand; // Aktualna rêka
+        public List<Card> InitialDeck;
+        private List<Card> deck;
+        private List<Card> discardPile;
+        private List<Card> hand;
 
-        public Transform HandContainer; // Kontener dla kart w rêce
-        public CardViz CardPrefab; // Prefab karty do wyœwietlenia w rêce
+        public Transform HandContainer;
+        public CardViz CardPrefab;
         public int MaxHandSize = 3;
 
         void Start()
@@ -26,6 +26,11 @@ namespace GG
 
         public void ResetDeck()
         {
+            if (InitialDeck == null)
+            {
+                Debug.LogError("Talia gracza nie jest przypisana w PlayerDeck!");
+                return;
+            }
             deck = new List<Card>(InitialDeck);
 
             // Usuñ karty aktualnie w rêce z nowej talii
@@ -63,7 +68,6 @@ namespace GG
                     CardViz cardViz = Instantiate(CardPrefab, HandContainer);
                     cardViz.LoadCard(drawnCard);
 
-                    // Dodaj obs³ugê klikniêcia
                     var clickHandler = cardViz.gameObject.AddComponent<CardClickHandler>();
                     clickHandler.OnCardClicked = (clickedCard) => PlayCard(drawnCard, cardViz);
                 }
@@ -78,16 +82,12 @@ namespace GG
             // Przelicz obra¿enia (implementacja zale¿y od mechaniki gry)
             Debug.Log($"Zagrano kartê: {card.CardTitleText}");
 
-            // Przenieœ kartê do stosu kart odrzuconych
             hand.Remove(card);
             Debug.Log($"usunieta karta");
             discardPile.Add(card);
             Debug.Log($"na stos odrzuconych:");
 
-            // Usuñ wizualizacjê
             Destroy(cardViz.gameObject);
-
-            // Dobierz now¹ kartê
             DrawCard();
         }
     }

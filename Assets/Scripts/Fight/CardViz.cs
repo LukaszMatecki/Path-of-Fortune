@@ -6,10 +6,11 @@ namespace GG
 {
     public class CardViz : MonoBehaviour
     {
-        public Text Title;
-        public Image Image;
-        public Transform EffectPrimaryContainer;
-        public Transform EffectSecondaryContainer;
+        public Text Title; // Tytu³ karty
+        public Image Image; // Obraz g³ówny karty
+        public Transform EffectPrimaryContainer; // Kontener na efekty g³ówne
+        public Transform EffectSecondaryContainer; // Kontener na efekty dodatkowe
+        public Text StatsDisplay; // (Opcjonalne) Tekst do wyœwietlenia statystyk
 
         public Card Card;
 
@@ -25,31 +26,54 @@ namespace GG
         {
             if (c == null)
             {
+                Debug.LogWarning("Nie mo¿na za³adowaæ karty. Card jest null.");
                 return;
             }
-            Card = c;
-            Title.text = c.CardTitleText;
-            Image.sprite = c.CardImage;
 
-            PopulateGrid(EffectPrimaryContainer, c.CardEffectImagePrimary);
-            if (c.CardEffectImageSecondary == null || c.CardEffectImageSecondary.Count == 0)
+            Card = c;
+
+            // Za³aduj podstawowe informacje o karcie
+            if (Title != null)
+                Title.text = Card.CardTitleText;
+
+            if (Image != null)
+                Image.sprite = Card.CardImage;
+
+            if (EffectPrimaryContainer != null)
+                PopulateGrid(EffectPrimaryContainer, Card.CardEffectImagePrimary);
+
+            if (EffectSecondaryContainer != null)
             {
-                EffectSecondaryContainer.gameObject.SetActive(false);
+                if (Card.CardEffectImageSecondary == null || Card.CardEffectImageSecondary.Count == 0)
+                {
+                    EffectSecondaryContainer.gameObject.SetActive(false);
+                }
+                else
+                {
+                    EffectSecondaryContainer.gameObject.SetActive(true);
+                    PopulateGrid(EffectSecondaryContainer, Card.CardEffectImageSecondary);
+                }
             }
-            else
+
+            // Oblicz statystyki karty
+            Card.CalculateStats();
+
+            // Wyœwietl statystyki, jeœli pole tekstowe StatsDisplay istnieje
+            if (StatsDisplay != null)
             {
-                EffectSecondaryContainer.gameObject.SetActive(true);
-                PopulateGrid(EffectSecondaryContainer, c.CardEffectImageSecondary);
+                StatsDisplay.text = FormatStatsText();
             }
         }
 
         private void PopulateGrid(Transform container, List<Sprite> sprites)
         {
+            // Czyszczenie poprzednich efektów
             foreach (Transform child in container)
             {
                 Destroy(child.gameObject);
             }
 
+            // Dodawanie nowych ikon efektów
             foreach (var sprite in sprites)
             {
                 GameObject imageObject = new GameObject("EffectImage");
@@ -60,6 +84,19 @@ namespace GG
 
                 imageObject.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
             }
+        }
+
+        private string FormatStatsText()
+        {
+            // Tworzy tekst reprezentuj¹cy statystyki karty
+            string stats = "";
+            stats += $"Damage: {Card.Damage}\n";
+            stats += $"Shield: {Card.Shield}\n";
+            stats += $"Healing: {Card.Healing}\n";
+            if (Card.IgnoreBlock)
+                stats += "Ignores Block\n";
+
+            return stats;
         }
     }
 }

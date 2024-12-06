@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using GG;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 
 public class TileSelector : MonoBehaviour
@@ -8,10 +11,10 @@ public class TileSelector : MonoBehaviour
     public int maxSteps;
     public GameObject character;
     public Animator characterAnimator;
-    public Tilemap tilemapGround;  // Tilemap_Ground
-    public Tilemap tilemapOverGround; // Tilemap_OverGround (przeszkody)
+    public Tilemap tilemapGround;
+    public Tilemap tilemapOverGround;
     public bool isActive = true;
-
+    public GameObject playerCharacter;
     private List<Tile> selectedTiles = new List<Tile>();
 
     void Start()
@@ -136,6 +139,18 @@ public class TileSelector : MonoBehaviour
         Debug.Log("Przycisk 'Ready' klikniêty - rozpoczynanie ruchu.");
         StartCoroutine(MoveCharacterAlongPath());
     }
+    private void StartBattle(Enemy enemy)
+    {
+        Debug.Log("weszliœmy to funkcji startbattle");
+
+        StopAllCoroutines();
+
+        BattleManager.Instance.SetupBattle(enemy);
+        BattleManager.Instance.SetPlayerCharacter(playerCharacter);
+        Debug.Log("Talia przeciwnika: " + enemy.DeckSO.name);
+
+        SceneManager.LoadScene("Fight");
+    }
 
     private System.Collections.IEnumerator MoveCharacterAlongPath()
     {
@@ -144,7 +159,6 @@ public class TileSelector : MonoBehaviour
             foreach (Tile tile in selectedTiles)
             {
                 characterAnimator.SetBool("isWalking", true);
-                Debug.Log("Animacja chodzenia ustawiona na true");
 
                 Vector3 targetPosition = tile.transform.position;
                 targetPosition.y = character.transform.position.y;
@@ -166,8 +180,6 @@ public class TileSelector : MonoBehaviour
                         : Quaternion.Euler(0, 180, 0);
                 }
 
-                Debug.Log("Rotacja ustawiona na: " + targetRotation.eulerAngles);
-
                 while (Vector3.Distance(character.transform.position, targetPosition) > 0.1f)
                 {
                     character.transform.rotation = Quaternion.Slerp(character.transform.rotation, targetRotation, Time.deltaTime * 5);
@@ -175,16 +187,46 @@ public class TileSelector : MonoBehaviour
                     yield return null;
                 }
 
-                characterAnimator.SetBool("isWalking", false);
-                Debug.Log("Animacja chodzenia ustawiona na false");
-
-                Debug.Log("Postaæ przesz³a na pole: " + tile.name);
-
-                if (tile.HasEvent())
+                Vector3 tilePosition = targetPosition;
+                Vector3Int tileCellPosition = tilemapOverGround.WorldToCell(tilePosition);
+                Vector3 worldPosition = tilemapOverGround.GetCellCenterWorld(tileCellPosition);
+                Vector3 loweredPosition = new Vector3(worldPosition.x, worldPosition.y + 150f, worldPosition.z);
+                LayerMask overGroundLayer = LayerMask.GetMask("Tilemap_OverGround");
+                
+                RaycastHit hit;
+                if (Physics.Raycast(loweredPosition, Vector3.down, out hit, Mathf.Infinity))
                 {
-                    Debug.Log("Wykryto zdarzenie na polu " + tile.name + ". Zatrzymanie ruchu.");
-                    yield break;
+                    Debug.Log($"Raycast trafi³ w obiekt: {hit.collider.name}");
+
+                    Enemy enemy = hit.collider.GetComponent<Enemy>();
+                    if (enemy != null)
+                    {
+                        Debug.Log($"Przeciwnik {enemy.name} znaleziony na kafelku {tile.name}.");
+
+                        // Przypisanie przeciwnika do BattleManager
+                        BattleManager.Instance.CurrentEnemy = enemy;
+
+                        // Zatrzymanie ruchu postaci
+                        characterAnimator.SetBool("isWalking", false);
+                        StopAllCoroutines();
+                        Debug.Log("Zatrzymano dalszy ruch postaci.");
+
+                        // Rozpoczêcie walki
+                        StartBattle(enemy);
+                        Debug.Log("Rozpoczêto walkê z przeciwnikiem.");
+
+                        yield break;
+                    }
+                    else
+                    {
+                        Debug.Log("Raycast trafi³ w obiekt, ale nie jest to przeciwnik.");
+                    }
                 }
+                else
+                {
+                    Debug.Log($"Brak obiektu na kafelku {tile.name}. Przechodzê do kolejnego.");
+                }
+
             }
         }
         finally
@@ -205,6 +247,9 @@ public class TileSelector : MonoBehaviour
             selectedTiles.Clear();
         }
     }
+
+
+
     private void ClearPotentialMoveHighlights()
     {
         foreach (Tile tile in UnityEngine.Object.FindObjectsByType<Tile>(UnityEngine.FindObjectsSortMode.None))
