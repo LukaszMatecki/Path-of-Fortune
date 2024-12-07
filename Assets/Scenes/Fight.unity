@@ -214,6 +214,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Card (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 213386131319227055, guid: e48164b2099dfed42a5bd4a217594f32, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1959724545967532918, guid: e48164b2099dfed42a5bd4a217594f32, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1699,10 +1703,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4d6d8eb22f85e44bbf3e7a2bd77d175, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InitialDeck: []
-  HandContainer: {fileID: 645362308}
+  InitialDeck:
+  - {fileID: 11400000, guid: 9052b1a10493aff4d85a8851fb515446, type: 2}
+  - {fileID: 11400000, guid: bb55aa457e9177449bc06caa52f20dd3, type: 2}
+  HandContainer: {fileID: 1667435586}
   CardPrefab: {fileID: 93681381}
-  MaxHandSize: 3
+  MaxHandSize: 2
 --- !u!114 &970741200 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5017689109455571735, guid: e48164b2099dfed42a5bd4a217594f32, type: 3}
@@ -1730,6 +1736,10 @@ PrefabInstance:
     - target: {fileID: 213386131319227055, guid: e48164b2099dfed42a5bd4a217594f32, type: 3}
       propertyPath: m_Name
       value: Card (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 213386131319227055, guid: e48164b2099dfed42a5bd4a217594f32, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1959724545967532918, guid: e48164b2099dfed42a5bd4a217594f32, type: 3}
       propertyPath: m_AnchorMax.y
@@ -2107,6 +2117,10 @@ PrefabInstance:
     - target: {fileID: 213386131319227055, guid: e48164b2099dfed42a5bd4a217594f32, type: 3}
       propertyPath: m_Name
       value: Card (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 213386131319227055, guid: e48164b2099dfed42a5bd4a217594f32, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1959724545967532918, guid: e48164b2099dfed42a5bd4a217594f32, type: 3}
       propertyPath: m_AnchorMax.y
@@ -3430,7 +3444,7 @@ GameObject:
   - component: {fileID: 1667435587}
   - component: {fileID: 1667435588}
   m_Layer: 0
-  m_Name: Hand
+  m_Name: HandContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3498,7 +3512,10 @@ MonoBehaviour:
   CurrentEnemy: {fileID: 0}
   Hand: {fileID: 1667435586}
   PlayerCard: {fileID: 1403751676}
-  CardPrefabs: []
+  CardPrefabs:
+  - {fileID: 93681376}
+  - {fileID: 199772148}
+  - {fileID: 1951907626}
   playerCharacter: {fileID: 0}
 --- !u!1 &1667846292 stripped
 GameObject:

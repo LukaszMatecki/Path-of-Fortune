@@ -7,14 +7,32 @@ public class CardClickHandler : MonoBehaviour, IPointerClickHandler
 
     private Transform handContainer;
 
+    void Start()
+    {
+        // Przyk³ad przypisania handContainer, zak³adaj¹c, ¿e masz obiekt kontenera kart w scenie
+        Transform container = GameObject.Find("HandContainer")?.transform;
+
+        if (container != null)
+        {
+            SetHandContainer(container);
+        }
+        else
+        {
+            Debug.LogError("Nie znaleziono obiektu 'HandContainer' w scenie!");
+        }
+    }
+
+
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (transform.parent == null)
+        // Sprawdzenie, czy handContainer jest przypisany
+        if (handContainer == null)
         {
-            Debug.LogError("Rodzic karty jest null!");
+            Debug.LogError("HandContainer nie jest przypisany dla tej karty!");
             return;
         }
-        // SprawdŸ, czy karta jest w rêce gracza
+
+        // Sprawdzenie, czy karta jest w rêce
         if (transform.IsChildOf(handContainer))
         {
             OnCardClicked?.Invoke(this);
@@ -26,8 +44,16 @@ public class CardClickHandler : MonoBehaviour, IPointerClickHandler
         }
     }
 
+    // Funkcja do ustawienia handContainer
     public void SetHandContainer(Transform container)
     {
+        if (container == null)
+        {
+            Debug.LogError("Kontener kart jest null! Nie mogê ustawiæ handContainer.");
+            return;
+        }
+
         handContainer = container;
+        Debug.Log("Kontener zosta³ przypisany: " + handContainer.name);
     }
 }

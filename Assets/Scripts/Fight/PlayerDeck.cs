@@ -17,27 +17,41 @@ namespace GG
         void Start()
         {
             // Inicjalizacja talii
-            ResetDeck();
+            
             hand = new List<Card>();
             discardPile = new List<Card>();
 
+            if (InitialDeck == null || InitialDeck.Count == 0)
+            {
+                Debug.LogError("Talia gracza (InitialDeck) nie jest przypisana lub jest pusta!");
+                return;
+            }
+
+            ResetDeck();
             DrawStartingHand();
         }
 
         public void ResetDeck()
         {
-            if (InitialDeck == null)
+            if (InitialDeck == null || InitialDeck.Count == 0)
             {
                 Debug.LogError("Talia gracza nie jest przypisana w PlayerDeck!");
                 return;
             }
             deck = new List<Card>(InitialDeck);
 
+            if (hand == null)
+            {
+                Debug.LogError("Rêka gracza nie zosta³a zainicjowana!");
+                return;
+            }
+
             // Usuñ karty aktualnie w rêce z nowej talii
             foreach (var card in hand)
             {
                 deck.Remove(card);
             }
+            Debug.Log("Deck zosta³ zresetowany.");
         }
 
         public void DrawStartingHand()
@@ -69,6 +83,7 @@ namespace GG
                     cardViz.LoadCard(drawnCard);
 
                     var clickHandler = cardViz.gameObject.AddComponent<CardClickHandler>();
+                    clickHandler.SetHandContainer(HandContainer);
                     clickHandler.OnCardClicked = (clickedCard) => PlayCard(drawnCard, cardViz);
                 }
             }
