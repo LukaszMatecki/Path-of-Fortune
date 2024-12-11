@@ -25,6 +25,16 @@ public class TileSelector : MonoBehaviour
     void Update()
     {
         if (!isActive) return;
+
+        if (selectedTiles.Count > 0)
+        {
+            characterAnimator.SetBool("isWalking", true);
+        }
+        else
+        {
+            characterAnimator.SetBool("isWalking", false);
+        }
+
         if (Input.GetMouseButtonDown(0))
         {
             Debug.Log("LPM klikniêty - próba zaznaczenia pola.");
@@ -187,6 +197,8 @@ public class TileSelector : MonoBehaviour
                     yield return null;
                 }
 
+                characterAnimator.SetBool("isWalking", false);
+
                 Vector3 tilePosition = targetPosition;
                 Vector3Int tileCellPosition = tilemapOverGround.WorldToCell(tilePosition);
                 Vector3 worldPosition = tilemapOverGround.GetCellCenterWorld(tileCellPosition);
@@ -245,6 +257,8 @@ public class TileSelector : MonoBehaviour
                 tile.Highlight(Color.white);
             }
             selectedTiles.Clear();
+
+            characterAnimator.SetBool("isWalking", false);
         }
     }
 
