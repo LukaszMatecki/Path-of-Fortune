@@ -149,10 +149,12 @@ public class TileSelector : MonoBehaviour
     {
         if (isProcessingMoves)
         {
+            characterAnimator.SetBool("isWalking", true);
             Debug.Log("Ruchy ju¿ trwaj¹. Przycisk 'Ready' jest zablokowany.");
             return;
         }
 
+        characterAnimator.SetBool("isWalking", true);
         Debug.Log("Przycisk 'Ready' klikniêty - rozpoczynanie ruchu.");
         isProcessingMoves = true; // Ustawiamy flagê na true
         StartCoroutine(MoveCharacterAlongPath());
