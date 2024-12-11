@@ -31,11 +31,21 @@ public class PauseMenuScript : MonoBehaviour
 
     public void Pause()
     {
+        // Jeœli HUD jest przypisany, schowaj go
+        if (hud != null)
+        {
+            hud.SetActive(false);
+        }
+
+        // Jeœli TileSelector jest przypisany, wy³¹cz go
+        if (tileSelector != null)
+        {
+            tileSelector.isActive = false;
+        }
+
         Time.timeScale = 0;
         gamePaused = true;
         pauseMenu.SetActive(true);
-        hud.SetActive(false);
-        tileSelector.isActive = false;
     }
 
     public void Home()
@@ -53,5 +63,21 @@ public class PauseMenuScript : MonoBehaviour
         pauseMenu.SetActive(false);
         hud.SetActive(true);
         tileSelector.isActive = true;
+    }
+
+    public void ContinueFight()
+    {
+        Time.timeScale = 1;
+        gamePaused = false;
+        pauseMenu.SetActive(false);
+        hud.SetActive(true);
+    }
+
+    public void Surrender()
+    {
+        SceneManager.LoadScene("SampleScene");
+        Time.timeScale = 1;
+        gamePaused = false;
+        pauseMenu.SetActive(false);
     }
 }

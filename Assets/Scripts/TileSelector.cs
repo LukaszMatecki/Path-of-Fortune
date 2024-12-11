@@ -16,6 +16,7 @@ public class TileSelector : MonoBehaviour
     public bool isActive = true;
     public GameObject playerCharacter;
     private List<Tile> selectedTiles = new List<Tile>();
+    private bool isProcessingMoves = false;
 
     void Start()
     {
@@ -146,9 +147,17 @@ public class TileSelector : MonoBehaviour
 
     public void OnReadyButtonClicked()
     {
+        if (isProcessingMoves)
+        {
+            Debug.Log("Ruchy ju¿ trwaj¹. Przycisk 'Ready' jest zablokowany.");
+            return;
+        }
+
         Debug.Log("Przycisk 'Ready' klikniêty - rozpoczynanie ruchu.");
+        isProcessingMoves = true; // Ustawiamy flagê na true
         StartCoroutine(MoveCharacterAlongPath());
     }
+
     private void StartBattle(Enemy enemy)
     {
         Debug.Log("weszliœmy to funkcji startbattle");
@@ -259,6 +268,7 @@ public class TileSelector : MonoBehaviour
             selectedTiles.Clear();
 
             characterAnimator.SetBool("isWalking", false);
+            isProcessingMoves = false;
         }
     }
 
