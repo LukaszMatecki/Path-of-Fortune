@@ -21,8 +21,24 @@ public class SaveSystem : MonoBehaviour
     public static SaveSystem Instance;
     private string saveDirectory;
 
+    [SerializeField] private GameObject overwritePopup; // Panel nadpisania
+    [SerializeField] private Button overwriteConfirmButton; // Przycisk "Tak"
+    [SerializeField] private Button overwriteCancelButton;  // Przycisk "Nie"
+    [SerializeField] private TextMeshProUGUI errorMessageText;
     [SerializeField] private TMP_InputField saveNameInputField; // Pole do wpisania nazwy zapisu
     [SerializeField] private Button saveButton;                 // Przycisk do zapisania gry
+
+    private void Start()
+    {
+        // Pod³¹cz funkcjê do zdarzenia wpisywania tekstu
+        saveNameInputField.onValueChanged.AddListener(OnSaveNameChanged);
+        saveButton.onClick.AddListener(OnSaveButtonClicked);
+
+        // Pocz¹tkowy stan
+        saveButton.interactable = false;
+        errorMessageText.gameObject.SetActive(false);
+    }
+
 
     private void Awake()
     {
@@ -45,18 +61,82 @@ public class SaveSystem : MonoBehaviour
         }
     }
 
+    private void OnSaveNameChanged(string text)
+    {
+        if (text.Length > 20)
+        {
+            // Ogranicz d³ugoœæ tekstu do 20 znaków
+            saveNameInputField.text = text.Substring(0, 20);
+
+            // Wyœwietl komunikat o b³êdzie
+            ShowErrorMessage("The save name cannot be longer than 20 characters!");
+            saveButton.interactable = false; // Wy³¹cz przycisk
+        }
+        else if (string.IsNullOrEmpty(text))
+        {
+            // Jeœli pole jest puste, wyœwietl odpowiedni komunikat
+            ShowErrorMessage("The save name cannot be empty");
+            saveButton.interactable = false; // Wy³¹cz przycisk
+        }
+        else
+        {
+            // Ukryj komunikat o b³êdzie i w³¹cz przycisk
+            HideErrorMessage();
+            saveButton.interactable = true;
+        }
+    }
+
+    private void ShowErrorMessage(string message)
+    {
+        errorMessageText.text = message; // Ustaw treœæ komunikatu
+        errorMessageText.gameObject.SetActive(true); // Poka¿ komunikat
+    }
+
+    private void HideErrorMessage()
+    {
+        errorMessageText.gameObject.SetActive(false); // Ukryj komunikat
+    }
+
     private void OnSaveButtonClicked()
     {
-        string saveName = saveNameInputField.text;
+        string saveName = saveNameInputField.text.Trim();
+        List<SaveData> allSaves = LoadAllSaves();
 
-        if (string.IsNullOrEmpty(saveName))
+        if (allSaves.Exists(save => string.Equals(save.saveName, saveName, StringComparison.Ordinal)))
         {
-            Debug.Log("WprowadŸ nazwê zapisu!");
+            // Jeœli istnieje zapis o tej nazwie, poka¿ popup nadpisania
+            ShowOverwritePopup(saveName);
             return;
         }
 
-        // Uruchamiamy Coroutine, aby poczekaæ na zakoñczenie rysowania
+        // Rozpocznij zapis gry
         StartCoroutine(SaveGameCoroutine(saveName));
+        saveNameInputField.text = "";
+        HideErrorMessage();
+        saveButton.interactable = false;
+    }
+
+    private void ShowOverwritePopup(string saveName)
+    {
+        overwritePopup.SetActive(true);
+
+        // Przypisz akcjê dla przycisku "Tak" (nadpisz zapis)
+        overwriteConfirmButton.onClick.RemoveAllListeners();
+        overwriteConfirmButton.onClick.AddListener(() =>
+        {
+            overwritePopup.SetActive(false);
+            StartCoroutine(SaveGameCoroutine(saveName));
+            saveNameInputField.text = "";
+            HideErrorMessage();
+            saveButton.interactable = false;
+        });
+
+        // Przypisz akcjê dla przycisku "Nie" (anuluj nadpisanie)
+        overwriteCancelButton.onClick.RemoveAllListeners();
+        overwriteCancelButton.onClick.AddListener(() =>
+        {
+            overwritePopup.SetActive(false);
+        });
     }
 
     private IEnumerator SaveGameCoroutine(string saveName)
@@ -110,11 +190,30 @@ public class SaveSystem : MonoBehaviour
     public List<SaveData> LoadAllSaves()
     {
         List<SaveData> saves = new List<SaveData>();
-        foreach (string file in Directory.GetFiles(saveDirectory, "*.json"))
+        string[] files = Directory.GetFiles(saveDirectory, "*.json");
+
+        foreach (string file in files)
         {
-            string json = File.ReadAllText(file);
-            saves.Add(JsonUtility.FromJson<SaveData>(json));
+            try
+            {
+                string json = File.ReadAllText(file);
+                SaveData saveData = JsonUtility.FromJson<SaveData>(json);
+
+                if (saveData != null)
+                {
+                    saves.Add(saveData);
+                }
+                else
+                {
+                    Debug.LogWarning($"Nie mo¿na wczytaæ zapisu z pliku: {file}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"B³¹d podczas wczytywania zapisu z pliku: {file}. Szczegó³y: {ex.Message}");
+            }
         }
+
         return saves;
     }
 
