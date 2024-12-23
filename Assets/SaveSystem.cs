@@ -13,6 +13,9 @@ public class SaveData
     public string saveTime;
     public string playTime;
     public string screenshotPath;
+    public float playerPositionX;
+    public float playerPositionY;
+    public float playerPositionZ;
     public Dictionary<string, object> gameData; // Dodaj dane specyficzne dla Twojej gry
 }
 
@@ -21,6 +24,8 @@ public class SaveSystem : MonoBehaviour
     public static SaveSystem Instance;
     private string saveDirectory;
 
+
+    [SerializeField] private GameObject player;
     [SerializeField] private GameObject overwritePopup;
     [SerializeField] private Button overwriteConfirmButton;
     [SerializeField] private Button overwriteCancelButton;
@@ -38,6 +43,7 @@ public class SaveSystem : MonoBehaviour
             saveDirectory = Path.Combine(Application.persistentDataPath, "Saves");
             if (!Directory.Exists(saveDirectory))
                 Directory.CreateDirectory(saveDirectory);
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -123,6 +129,7 @@ public class SaveSystem : MonoBehaviour
 
         Texture2D screenshot = CaptureScreenshot();
         Dictionary<string, object> gameData = new Dictionary<string, object>();
+
         SaveGame(saveName, screenshot, gameData);
 
         isSaving = false;
@@ -141,6 +148,9 @@ public class SaveSystem : MonoBehaviour
             saveTime = timestamp,
             playTime = TimeSpan.FromSeconds(Time.timeSinceLevelLoad).ToString(@"hh\:mm\:ss"),
             screenshotPath = screenshotPath,
+            playerPositionX = player.transform.position.x,
+            playerPositionY = player.transform.position.y,
+            playerPositionZ = player.transform.position.z,
             gameData = gameData
         };
 
@@ -202,6 +212,23 @@ public class SaveSystem : MonoBehaviour
             File.Delete(screenshotPath);
 
         Debug.Log($"Save deleted: {saveName}");
+    }
+
+    public void LoadGame(SaveData saveData)
+    {
+        if (player != null)
+        {
+            player.transform.position = new Vector3(
+                saveData.playerPositionX,
+                saveData.playerPositionY,
+                saveData.playerPositionZ
+            );
+            Debug.Log($"Player position loaded: {player.transform.position}");
+        }
+        else
+        {
+            Debug.LogWarning("Player object is not assigned!");
+        }
     }
 
     public static class SaveDataManager

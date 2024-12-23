@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.IO;
+using UnityEngine.SceneManagement;
 
 public class LoadGamePanel : MonoBehaviour
 {
@@ -48,6 +49,7 @@ public class LoadGamePanel : MonoBehaviour
             // Dodaj funkcjonalnoœæ przycisków
             savePanel.transform.Find("DeleteButton").GetComponent<Button>().onClick.AddListener(() => DeleteSave(save.saveName));
             savePanel.transform.Find("LoadButton").GetComponent<Button>().onClick.AddListener(() => LoadGame(save));
+
         }
     }
 
@@ -94,6 +96,11 @@ public class LoadGamePanel : MonoBehaviour
         // Za³aduj dane gry z zapisu i wczytaj stan gry
         Debug.Log($"Wczytano grê: {save.saveName}");
 
-        // Tu mo¿esz dodaæ logikê ³adowania stanu gry
+        // Przekazanie danych zapisu do GameDataManager
+        GameDataManager.Instance.LoadedSaveData = save;
+
+        // Za³aduj scenê docelow¹
+        SceneManager.LoadScene("SampleScene"); // Zamieñ "TargetScene" na nazwê swojej sceny
+
     }
 }

@@ -15,6 +15,7 @@ public class SceneLoader : MonoBehaviour
 
     public void LoadScene(int Levelindex)
     {
+        GameDataManager.Instance.ClearData();
         StartCoroutine(LoadSceneAsynchronously(Levelindex));
     }
 
