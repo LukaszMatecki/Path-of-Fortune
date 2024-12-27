@@ -1,9 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class DiceRoll : MonoBehaviour
 {
-    public Text resultText;
+    [SerializeField] private TMP_Text resultText;
     private TileSelector tileSelector;
 
     private void Start()

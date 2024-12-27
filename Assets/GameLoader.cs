@@ -10,7 +10,7 @@ public class GameLoader : MonoBehaviour
         // Sprawdzenie, czy GameDataManager.Instance nie jest null
         if (GameDataManager.Instance == null)
         {
-            Debug.LogError("GameDataManager.Instance jest null!");
+            Debug.LogError("Nie wczytano ¿adnego zapisu ani nie wciœniêto rozpoczêcia gry! Prawdopodobnie klikasz Play na 2 scenie");
             return;
         }
 
@@ -50,44 +50,5 @@ public class GameLoader : MonoBehaviour
                 Debug.LogWarning("Nie przypisano obiektu gracza!");
             }
         }
-    }
-
-    private void LoadSavedGame()
-    {
-        SaveData saveData = GameDataManager.Instance.LoadedSaveData;
-
-        // Ustaw pozycjê gracza z zapisu
-        Vector3 loadedPosition = new Vector3(
-            saveData.playerPositionX,
-            saveData.playerPositionY,
-            saveData.playerPositionZ
-        );
-
-        if (player != null)
-        {
-            player.transform.position = loadedPosition;
-            Debug.Log($"Pozycja gracza za³adowana: {loadedPosition}");
-        }
-        else
-        {
-            Debug.LogWarning("Nie przypisano obiektu gracza!");
-        }
-    }
-
-    private void StartNewGame()
-    {
-        // Rozpocznij now¹ grê i ustaw domyœln¹ pozycjê gracza
-        if (player != null)
-        {
-            player.transform.position = defaultStartPosition;
-            Debug.Log($"Rozpoczêto now¹ grê. Pozycja gracza ustawiona na: {defaultStartPosition}");
-        }
-        else
-        {
-            Debug.LogWarning("Nie przypisano obiektu gracza!");
-        }
-
-        // Opcjonalnie, wyczyszcz dane zapisu, jeœli chcesz zresetowaæ stan gry
-        GameDataManager.Instance.ClearData();
     }
 }

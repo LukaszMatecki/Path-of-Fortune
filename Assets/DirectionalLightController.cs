@@ -1,13 +1,14 @@
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class DirectionalLightController : MonoBehaviour
 {
     public float rotationSpeed = 10f; // Prêdkoœæ obrotu
     public Light directionalLight;   // Odnoœnik do Directional Light
-    private Color orange = new Color(1f, 0.5f, 0f); // Definicja pomarañczowego koloru
 
     public Color morningColor = Color.red;    // Kolor poranka
-    public Color middayColor = Color.white;  // Kolor po³udnia
+    public Color middayColor = Color.white;   // Kolor po³udnia
     public Color eveningColor = new Color(1f, 0.5f, 0f); // Kolor wieczoru
 
     public float minIntensity = 0.2f; // Minimalna intensywnoœæ (noc)
@@ -16,11 +17,53 @@ public class DirectionalLightController : MonoBehaviour
     [Range(0f, 1f)]
     public float dayProportion = 0.9f; // Proporcja dnia: 90% dzieñ, 10% noc
 
-    void Update()
+    public float speedIncrement = 5f; // Wartoœæ, o któr¹ zmieniamy prêdkoœæ
+    [SerializeField] private Button increaseButton; // Przycisk do zwiêkszania
+    [SerializeField] private Button decreaseButton; // Przycisk do zmniejszania
+
+    [SerializeField] private TextMeshProUGUI clockText; // Tekst wyœwietlaj¹cy godzinê
+
+    private float timeInMinutes = 0f; // Czas w minutach (od 00:00 do 23:59)
+
+    private void Start()
+    {
+        timeInMinutes = 14f * 60f;
+        // Przypisanie funkcji do przycisków
+        if (increaseButton != null)
+            increaseButton.onClick.AddListener(IncreaseSpeed);
+
+        if (decreaseButton != null)
+            decreaseButton.onClick.AddListener(DecreaseSpeed);
+    }
+
+    private void Update()
     {
         // Obracaj Directional Light
         transform.Rotate(Vector3.up * rotationSpeed * Time.deltaTime);
 
+        // Aktualizuj czas w minutach w zale¿noœci od prêdkoœci obrotu
+        float anglePerMinute = 360f / (24f * 60f); // 360 stopni w ci¹gu 24 godzin
+        timeInMinutes += rotationSpeed * Time.deltaTime / anglePerMinute;
+
+        if (timeInMinutes >= 1440f) // Zresetuj po 24 godzinach
+            timeInMinutes -= 1440f;
+
+        UpdateClock();
+        UpdateLighting();
+    }
+
+    private void UpdateClock()
+    {
+        // Konwertuj czas w minutach na godziny i minuty
+        int hours = Mathf.FloorToInt(timeInMinutes / 60f);
+        int minutes = Mathf.FloorToInt(timeInMinutes % 60f);
+
+        // Ustaw tekst zegara w formacie HH:mm
+        clockText.text = $"{hours:D2}:{minutes:D2}";
+    }
+
+    private void UpdateLighting()
+    {
         // Oblicz k¹t w zakresie od -180 do 180
         float angle = transform.eulerAngles.x;
         if (angle > 180f) angle -= 360f;
@@ -54,5 +97,17 @@ public class DirectionalLightController : MonoBehaviour
             directionalLight.color = Color.black; // Mo¿esz zmieniæ na np. granatowy dla nocy
             directionalLight.intensity = minIntensity;
         }
+    }
+
+    // Funkcja zwiêkszaj¹ca prêdkoœæ obrotu
+    private void IncreaseSpeed()
+    {
+        rotationSpeed += speedIncrement;
+    }
+
+    // Funkcja zmniejszaj¹ca prêdkoœæ obrotu
+    private void DecreaseSpeed()
+    {
+        rotationSpeed = Mathf.Max(0, rotationSpeed - speedIncrement); // Prêdkoœæ nie mo¿e byæ ujemna
     }
 }
