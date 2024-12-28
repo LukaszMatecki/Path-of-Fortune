@@ -17,10 +17,12 @@ public class DirectionalLightController : MonoBehaviour
     [Range(0f, 1f)]
     public float dayProportion = 0.9f; // Proporcja dnia: 90% dzieñ, 10% noc
 
-    public float speedIncrement = 5f; // Wartoœæ, o któr¹ zmieniamy prêdkoœæ
+    public float speedIncrement = 0.5f; // Wartoœæ, o któr¹ zmieniamy prêdkoœæ
+    public float speedFasterIncrement = 2f; 
     [SerializeField] private Button increaseButton; // Przycisk do zwiêkszania
+    [SerializeField] private Button increaseFasterButton;
     [SerializeField] private Button decreaseButton; // Przycisk do zmniejszania
-
+    [SerializeField] private Button pauseButton;
     [SerializeField] private TextMeshProUGUI clockText; // Tekst wyœwietlaj¹cy godzinê
 
     private float timeInMinutes = 0f; // Czas w minutach (od 00:00 do 23:59)
@@ -28,12 +30,18 @@ public class DirectionalLightController : MonoBehaviour
     private void Start()
     {
         timeInMinutes = 14f * 60f;
-        // Przypisanie funkcji do przycisków
+        
         if (increaseButton != null)
             increaseButton.onClick.AddListener(IncreaseSpeed);
 
+        if (increaseFasterButton != null)
+            increaseFasterButton.onClick.AddListener(IncreaseFasterSpeed);
+
         if (decreaseButton != null)
             decreaseButton.onClick.AddListener(DecreaseSpeed);
+
+        if (pauseButton != null)
+            pauseButton.onClick.AddListener(PauseSpeed);
     }
 
     private void Update()
@@ -105,9 +113,19 @@ public class DirectionalLightController : MonoBehaviour
         rotationSpeed += speedIncrement;
     }
 
+    private void IncreaseFasterSpeed()
+    {
+        rotationSpeed += speedFasterIncrement;
+    }
+
     // Funkcja zmniejszaj¹ca prêdkoœæ obrotu
     private void DecreaseSpeed()
     {
         rotationSpeed = Mathf.Max(0, rotationSpeed - speedIncrement); // Prêdkoœæ nie mo¿e byæ ujemna
+    }
+
+    private void PauseSpeed()
+    {
+        rotationSpeed = 0;
     }
 }
