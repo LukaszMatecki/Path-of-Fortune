@@ -29,7 +29,7 @@ public class TileSelector : MonoBehaviour
 
         if (selectedTiles.Count > 0)
         {
-            characterAnimator.SetBool("isWalking", true);
+            //characterAnimator.SetBool("isWalking", true);
         }
         else
         {
@@ -208,7 +208,7 @@ public class TileSelector : MonoBehaviour
                     yield return null;
                 }
 
-                characterAnimator.SetBool("isWalking", false);
+                //characterAnimator.SetBool("isWalking", false);
 
                 Vector3 tilePosition = targetPosition;
                 Vector3Int tileCellPosition = tilemapOverGround.WorldToCell(tilePosition);
