@@ -30,7 +30,7 @@ public class TileSelector : MonoBehaviour
 
         if (selectedTiles.Count > 0)
         {
-            characterAnimator.SetBool("isWalking", true);
+            //characterAnimator.SetBool("isWalking", true);
         }
         else
         {
