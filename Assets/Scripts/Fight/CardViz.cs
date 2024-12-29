@@ -6,97 +6,83 @@ namespace GG
 {
     public class CardViz : MonoBehaviour
     {
-        public Text Title; // Tytu³ karty
-        public Image Image; // Obraz g³ówny karty
-        public Transform EffectPrimaryContainer; // Kontener na efekty g³ówne
-        public Transform EffectSecondaryContainer; // Kontener na efekty dodatkowe
-        public Text StatsDisplay; // (Opcjonalne) Tekst do wyœwietlenia statystyk
+        [Header("Visual Components")]
+        public Text Title;
+        public Image Image;
+        public Transform EffectPrimaryContainer;
+        public Transform EffectSecondaryContainer;
 
+        [Header("Assigned Card")]
         public Card Card;
 
-        void Start()
+        private void Start()
         {
             if (Card != null)
             {
                 LoadCard(Card);
             }
+            else
+            {
+                Debug.LogWarning("Card is not assigned in CardViz.");
+            }
         }
 
-        public void LoadCard(Card c)
+
+        public void LoadCard(Card card)
         {
-            if (c == null)
+            if (card == null)
             {
-                Debug.LogWarning("Nie mo¿na za³adowaæ karty. Card jest null.");
+                Debug.LogWarning("Card is null. Cannot load.");
                 return;
             }
 
-            Card = c;
+            Card = card;
 
-            // Za³aduj podstawowe informacje o karcie
-            if (Title != null)
-                Title.text = Card.CardTitleText;
+            // Load basic visuals
+            Title.text = Card.CardTitleText;
+            Image.sprite = Card.CardImage;
 
-            if (Image != null)
-                Image.sprite = Card.CardImage;
+            // Load effects
+            PopulateGrid(EffectPrimaryContainer, Card.CardEffectImagePrimary);
+            PopulateGrid(EffectSecondaryContainer, Card.CardEffectImageSecondary);
 
-            if (EffectPrimaryContainer != null)
-                PopulateGrid(EffectPrimaryContainer, Card.CardEffectImagePrimary);
-
-            if (EffectSecondaryContainer != null)
-            {
-                if (Card.CardEffectImageSecondary == null || Card.CardEffectImageSecondary.Count == 0)
-                {
-                    EffectSecondaryContainer.gameObject.SetActive(false);
-                }
-                else
-                {
-                    EffectSecondaryContainer.gameObject.SetActive(true);
-                    PopulateGrid(EffectSecondaryContainer, Card.CardEffectImageSecondary);
-                }
-            }
-
-            // Oblicz statystyki karty
+            // Calculate stats
             Card.CalculateStats();
 
-            // Wyœwietl statystyki, jeœli pole tekstowe StatsDisplay istnieje
-            if (StatsDisplay != null)
-            {
-                StatsDisplay.text = FormatStatsText();
-            }
         }
 
         private void PopulateGrid(Transform container, List<Sprite> sprites)
         {
-            // Czyszczenie poprzednich efektów
             foreach (Transform child in container)
             {
                 Destroy(child.gameObject);
             }
 
-            // Dodawanie nowych ikon efektów
             foreach (var sprite in sprites)
             {
-                GameObject imageObject = new GameObject("EffectImage");
-                imageObject.transform.SetParent(container, false);
+                if (sprite != null)
+                {
+                    GameObject effectIcon = new GameObject("EffectIcon");
+                    effectIcon.transform.SetParent(container, false);
 
-                Image img = imageObject.AddComponent<Image>();
-                img.sprite = sprite;
-
-                imageObject.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+                    var image = effectIcon.AddComponent<Image>();
+                    image.sprite = sprite;
+                    effectIcon.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+                }
             }
         }
 
         private string FormatStatsText()
         {
-            // Tworzy tekst reprezentuj¹cy statystyki karty
-            string stats = "";
-            stats += $"Damage: {Card.Damage}\n";
-            stats += $"Shield: {Card.Shield}\n";
-            stats += $"Healing: {Card.Healing}\n";
-            if (Card.IgnoreBlock)
-                stats += "Ignores Block\n";
-
-            return stats;
+            return $"{(Card.Damage > 0 ? $"Damage: {Card.Damage}\n" : "")}" +
+                   $"{(Card.Shield > 0 ? $"Shield: {Card.Shield}\n" : "")}" +
+                   $"{(Card.Healing > 0 ? $"Healing: {Card.Healing}\n" : "")}" +
+                   $"{(Card.IgnoreBlock ? "Ignores Block\n" : "")}";
         }
+        public Card GetCard()
+        {
+            return Card;
+        }
+
     }
 }

@@ -5,105 +5,43 @@ namespace GG
 {
     public class PlayerDeck : MonoBehaviour
     {
-        public List<Card> InitialDeck;
-        private List<Card> deck;
-        private List<Card> discardPile;
-        private List<Card> hand;
+        public static PlayerDeck Instance;
 
-        public Transform HandContainer;
-        public CardViz CardPrefab;
-        public int MaxHandSize = 3;
+        [Header("Player Deck")]
+        public List<Card> Deck; // Talia gracza, przypisywana w inspektorze
 
-        void Start()
+        private void Awake()
         {
-            // Inicjalizacja talii
-            
-            hand = new List<Card>();
-            discardPile = new List<Card>();
-
-            if (InitialDeck == null || InitialDeck.Count == 0)
+            if (Instance == null)
             {
-                Debug.LogError("Talia gracza (InitialDeck) nie jest przypisana lub jest pusta!");
-                return;
+                Instance = this;
+                DontDestroyOnLoad(gameObject); // Utrzymuje obiekt miêdzy scenami
             }
-
-            ResetDeck();
-            DrawStartingHand();
-        }
-
-        public void ResetDeck()
-        {
-            if (InitialDeck == null || InitialDeck.Count == 0)
+            else
             {
-                Debug.LogError("Talia gracza nie jest przypisana w PlayerDeck!");
-                return;
-            }
-            deck = new List<Card>(InitialDeck);
-
-            if (hand == null)
-            {
-                Debug.LogError("Rêka gracza nie zosta³a zainicjowana!");
-                return;
-            }
-
-            // Usuñ karty aktualnie w rêce z nowej talii
-            foreach (var card in hand)
-            {
-                deck.Remove(card);
-            }
-            Debug.Log("Deck zosta³ zresetowany.");
-        }
-
-        public void DrawStartingHand()
-        {
-            for (int i = 0; i < MaxHandSize; i++)
-            {
-                DrawCard();
+                Destroy(gameObject); // Zapobiega duplikacji singletona
             }
         }
 
-        public void DrawCard()
+        public List<Card> GetDeck()
         {
-            if (deck.Count == 0)
+            return Deck;
+        }
+
+        public void AddCard(Card card)
+        {
+            if (card != null && !Deck.Contains(card))
             {
-                ResetDeck();
-            }
-
-            if (deck.Count > 0 && hand.Count < MaxHandSize)
-            {
-                int randomIndex = Random.Range(0, deck.Count);
-                Card drawnCard = deck[randomIndex];
-                deck.RemoveAt(randomIndex);
-                hand.Add(drawnCard);
-
-                // Dodaj wizualizacjê do rêki
-                if (HandContainer != null && CardPrefab != null)
-                {
-                    CardViz cardViz = Instantiate(CardPrefab, HandContainer);
-                    cardViz.LoadCard(drawnCard);
-
-                    var clickHandler = cardViz.gameObject.AddComponent<CardClickHandler>();
-                    clickHandler.SetHandContainer(HandContainer);
-                    clickHandler.OnCardClicked = (clickedCard) => PlayCard(drawnCard, cardViz);
-                }
+                Deck.Add(card);
             }
         }
 
-
-        public void PlayCard(Card card, CardViz cardViz)
+        public void RemoveCard(Card card)
         {
-            if (!hand.Contains(card)) return;
-
-            // Przelicz obra¿enia (implementacja zale¿y od mechaniki gry)
-            Debug.Log($"Zagrano kartê: {card.CardTitleText}");
-
-            hand.Remove(card);
-            Debug.Log($"usunieta karta");
-            discardPile.Add(card);
-            Debug.Log($"na stos odrzuconych:");
-
-            Destroy(cardViz.gameObject);
-            DrawCard();
+            if (Deck.Contains(card))
+            {
+                Deck.Remove(card);
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
+using static GG.BattleManager;
 
 public class TileSelector : MonoBehaviour
 {
@@ -29,7 +30,7 @@ public class TileSelector : MonoBehaviour
 
         if (selectedTiles.Count > 0)
         {
-            //characterAnimator.SetBool("isWalking", true);
+            characterAnimator.SetBool("isWalking", true);
         }
         else
         {
@@ -162,16 +163,14 @@ public class TileSelector : MonoBehaviour
 
     private void StartBattle(Enemy enemy)
     {
-        Debug.Log("weszliœmy to funkcji startbattle");
+        Debug.Log("Rozpoczynanie walki z przeciwnikiem");
 
-        StopAllCoroutines();
+        GameManager.Instance.SetCurrentEnemy(enemy);
 
-        BattleManager.Instance.SetupBattle(enemy);
-        BattleManager.Instance.SetPlayerCharacter(playerCharacter);
-        Debug.Log("Talia przeciwnika: " + enemy.DeckSO.name);
-
+        // Za³aduj scenê walki
         SceneManager.LoadScene("Fight");
     }
+
 
     private System.Collections.IEnumerator MoveCharacterAlongPath()
     {
@@ -208,26 +207,27 @@ public class TileSelector : MonoBehaviour
                     yield return null;
                 }
 
-                //characterAnimator.SetBool("isWalking", false);
+                characterAnimator.SetBool("isWalking", false);
 
                 Vector3 tilePosition = targetPosition;
                 Vector3Int tileCellPosition = tilemapOverGround.WorldToCell(tilePosition);
                 Vector3 worldPosition = tilemapOverGround.GetCellCenterWorld(tileCellPosition);
                 Vector3 loweredPosition = new Vector3(worldPosition.x, worldPosition.y + 150f, worldPosition.z);
                 LayerMask overGroundLayer = LayerMask.GetMask("Tilemap_OverGround");
-                
+
                 RaycastHit hit;
                 if (Physics.Raycast(loweredPosition, Vector3.down, out hit, Mathf.Infinity))
                 {
                     Debug.Log($"Raycast trafi³ w obiekt: {hit.collider.name}");
 
+                    // Dodajemy sprawdzenie, czy komponent Enemy jest przypisany
                     Enemy enemy = hit.collider.GetComponent<Enemy>();
                     if (enemy != null)
                     {
-                        Debug.Log($"Przeciwnik {enemy.name} znaleziony na kafelku {tile.name}.");
+                        Debug.Log($"Przeciwnik {enemy.name} (zdrowie = {enemy.HealthPoints} diff={enemy.DifficultyLevel} znaleziony na kafelku {tile.name}.");
 
                         // Przypisanie przeciwnika do BattleManager
-                        BattleManager.Instance.CurrentEnemy = enemy;
+                        //BattleManager.Instance.CurrentEnemy = enemy;
 
                         // Zatrzymanie ruchu postaci
                         characterAnimator.SetBool("isWalking", false);
@@ -273,6 +273,7 @@ public class TileSelector : MonoBehaviour
             isProcessingMoves = false;
         }
     }
+
 
 
 
@@ -339,7 +340,4 @@ public class TileSelector : MonoBehaviour
             }
         }
     }
-
-
-
 }

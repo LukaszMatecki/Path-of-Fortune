@@ -1,248 +1,374 @@
-using GG; // Zak³adamy, ¿e Enemy i Card s¹ w tym namespace
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class BattleManager : MonoBehaviour
+namespace GG
 {
-    public static BattleManager Instance;
-
-    [Header("Game References")]
-    public PlayerDeck PlayerDeck; // Talia gracza
-    public Enemy CurrentEnemy; // Aktualny przeciwnik
-    public Transform Hand; // Kontener kart w rêce gracza
-    public Transform PlayerCard; // Obiekt docelowy zagranych kart
-
-    [Header("Card Prefabs")]
-    public GameObject[] CardPrefabs; // Prefaby kart (Card1, Card2, Card3, Card4)
-
-    private bool playerTurn = false; // Flaga okreœlaj¹ca, czy jest tura gracza
-    private bool battleOngoing = true; // Czy walka trwa
-    private Card EnemyPlayedCard; // Karta zagrana przez przeciwnika
-    public GameObject playerCharacter;
-    private void Awake()
+    public class BattleManager : MonoBehaviour
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject); 
-        }
-        else
-        {
-            Debug.Log($"usuwanie obiektu {gameObject}");
-            Destroy(gameObject);
-        }
-    }
-    public void SetPlayerCharacter(GameObject character)
-    {
-        playerCharacter = character;
-    }
+        [Header("UI References")]
+        public Transform HandContainer;
+        public Transform PlayerCardContainer;
+        public Transform EnemyCardContainer;
+        public GameObject CardPrefab;
 
+        [SerializeField] private TMP_Text EnemyNameText;
+        [SerializeField] private TMP_Text EnemyHealthText;
+        [SerializeField] private TMP_Text PlayerNameText;
+        [SerializeField] private TMP_Text PlayerHealthText;
+        [SerializeField] private GameObject EndTurnButton;
 
-    public void SetupBattle(Enemy enemy)
-    {
-        // Zapewnienie, ¿e nie tworzysz nowego obiektu BattleManager
-        if (Instance != this)
+        private List<Card> playerHand = new List<Card>();
+        private List<Card> originalDeck = new List<Card>();
+        private List<Card> currentDeck = new List<Card>();
+
+        private List<Card> enemyOriginalDeck = new List<Card>();
+        private List<Card> enemyCurrentDeck = new List<Card>();
+
+        public int HandSize = 3;
+
+        public bool useManualTurnEnding = true; // Flaga do sterowania trybem koñczenia tury
+
+        private PlayerInfo playerInfo;
+        private int currentPlayerHealth;
+
+        private EnemyBattleData enemyData;
+
+        private GameObject activeEnemyCardObject;
+        private GameObject activePlayerCardObject;
+
+        private Card currentEnemyCard;
+
+        private bool isEndTurnButtonClicked = false; // Flaga, która zapobiega wielokrotnemu klikniêciu przycisku
+        public bool isTurnInProgress = true; // Flaga do œledzenia, czy tura trwa
+
+        private void Start()
         {
-            Debug.LogError("Próba przypisania BattleManager do innego obiektu!");
-            return;
-        }
-        SpawnPlayerCharacter();
-        // Logika walki
-        CurrentEnemy = enemy;
-        Debug.Log($"Rozpoczêcie walki z przeciwnikiem: {enemy.Name} | HP: {enemy.HealthPoints}");
-        StartEnemyTurn();
-    }
-    public void SpawnPlayerCharacter()
-    {
-        if (playerCharacter != null)
-        {
-            if (!playerCharacter.activeInHierarchy)
+            if (GameManager.Instance != null && GameManager.Instance.CurrentEnemyData != null)
             {
-                playerCharacter.SetActive(true); // Aktywowanie postaci na scenie
+                enemyData = GameManager.Instance.CurrentEnemyData;
+                SetEnemyData(enemyData);
+                Debug.Log("Dane przeciwnika ustawione.");
+
+                Deck enemyDeck = GetEnemyDeckByDifficulty(enemyData.DifficultyLevel);
+                if (enemyDeck != null)
+                {
+                    enemyOriginalDeck = new List<Card>(enemyDeck.GetCards());
+                    enemyCurrentDeck = new List<Card>(enemyOriginalDeck);
+                }
+                else
+                {
+                    Debug.LogError("Nie uda³o siê znaleŸæ talii dla poziomu trudnoœci: " + enemyData.DifficultyLevel);
+                }
+            }
+            else
+            {
+                Debug.LogError("Nie znaleziono danych o przeciwniku.");
             }
 
-            // Ustawienie pozycji postaci w scenie walki
-            playerCharacter.transform.position = new Vector3(5f, 0f, 0f); // Przyk³adowa pozycja w scenie walki
-        }
-        else
-        {
-            Debug.LogError("Postaæ gracza nie zosta³a przypisana do BattleManager!");
-        }
-    }
-
-    private void StartEnemyTurn()
-    {
-        if (!battleOngoing) return;
-
-        Debug.Log("Tura przeciwnika!");
-        playerTurn = false;
-
-        if (CurrentEnemy != null && CurrentEnemy.Deck != null)
-        {
-            EnemyPlayedCard = CurrentEnemy.Deck.PlayRandomCard();
-            if (EnemyPlayedCard != null)
+            playerInfo = PlayerInfo.Instance;
+            if (playerInfo != null)
             {
-                Debug.Log($"Przeciwnik zagra³ kartê: {EnemyPlayedCard.CardTitleText}. Obra¿enia: {EnemyPlayedCard.Damage}, Leczenie: {EnemyPlayedCard.Healing}, Blok: {EnemyPlayedCard.Shield}");
+                currentPlayerHealth = playerInfo.maxHealth;
+                Debug.Log("Znaleziono PlayerInfo z maksymalnym zdrowiem: " + playerInfo.maxHealth);
+                UpdatePlayerHealthText();
+            }
+            else
+            {
+                Debug.LogError("Nie znaleziono obiektu PlayerInfo w scenie.");
+            }
+
+            originalDeck = new List<Card>(PlayerDeck.Instance.GetDeck());
+            currentDeck = new List<Card>(originalDeck);
+
+            EnemyPlayCard();
+            DrawStartingHand(HandSize);
+
+            if (EndTurnButton != null)
+            {
+                EndTurnButton.SetActive(useManualTurnEnding);
+                EndTurnButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(OnEndTurnButtonClicked);
             }
         }
-        else
+
+        private Deck GetEnemyDeckByDifficulty(int difficultyLevel)
         {
-            Debug.LogError("Brak przypisanego przeciwnika lub jego talii.");
+            if (GameManager.Instance == null)
+            {
+                Debug.LogError("GameManager nie jest dostêpny.");
+                return null;
+            }
+
+            return difficultyLevel switch
+            {
+                1 => GameManager.Instance.Deck_diff_1,
+                2 => GameManager.Instance.Deck_diff_2,
+                3 => GameManager.Instance.Deck_diff_3,
+                _ => throw new System.ArgumentOutOfRangeException("Nieznany poziom trudnoœci: " + difficultyLevel),
+            };
         }
 
-        // Przejœcie do tury gracza
-        Invoke(nameof(StartPlayerTurn), 2.0f);
+        private void DrawStartingHand(int numCards)
+        {
+            for (int i = 0; i < numCards; i++)
+            {
+                DrawCard();
+            }
+        }
+
+        private void DrawCard()
+        {
+            if (currentDeck.Count == 0)
+            {
+                ReshuffleDeck();
+            }
+
+            if (currentDeck.Count > 0)
+            {
+                int randomIndex = Random.Range(0, currentDeck.Count);
+                Card card = currentDeck[randomIndex];
+                currentDeck.RemoveAt(randomIndex);
+                playerHand.Add(card);
+
+                GameObject cardObject = Instantiate(CardPrefab, HandContainer);
+                var cardViz = cardObject.GetComponent<CardViz>();
+                cardViz.LoadCard(card);
+
+                cardObject.AddComponent<CardClickHandler>().Initialize(this, card, cardObject);
+            }
+        }
+
+        public void PlayCard(Card card, GameObject cardObject)
+        {
+            if (!isTurnInProgress)
+            {
+                Debug.LogWarning("Zosta³a ju¿ zagrana karta w tej turze lub tura jest w toku.");
+                return;
+            }
+
+            if (!playerHand.Contains(card)) return;
+
+            playerHand.Remove(card);
+            cardObject.transform.SetParent(PlayerCardContainer);
+
+            activePlayerCardObject = cardObject;
+            HandlePlayerTurn(card);
+        }
+
+        private void HandlePlayerTurn(Card card)
+        {
+            if (!useManualTurnEnding)
+            {
+                ApplyCardEffects(card, currentEnemyCard);
+                StartCoroutine(RemoveCardsAfterDelay(2f));
+            }
+        }
+
+        public void OnPlayerCardClicked(GameObject cardObject)
+        {
+            if (!isTurnInProgress || !cardObject.transform.IsChildOf(PlayerCardContainer))
+            {
+                return;
+            }
+
+            CardViz cardViz = cardObject.GetComponent<CardViz>();
+            Card card = cardViz.GetCard();
+
+            if (card != null)
+            {
+                Debug.Log("Karta klikniêta w kontenerze gracza: " + card.CardTitleText);
+
+                playerHand.Add(card);
+                cardObject.transform.SetParent(HandContainer);
+
+                activePlayerCardObject = null;
+            }
+        }
+
+        public void EnemyPlayCard()
+        {
+            if (enemyCurrentDeck.Count == 0)
+            {
+                ReshuffleEnemyDeck();
+            }
+
+            if (enemyCurrentDeck.Count > 0)
+            {
+                int randomIndex = Random.Range(0, enemyCurrentDeck.Count);
+                Card enemyCard = enemyCurrentDeck[randomIndex];
+                currentEnemyCard = enemyCard;
+                enemyCurrentDeck.RemoveAt(randomIndex);
+
+                Debug.Log($"Przeciwnik zagra³ kartê: {enemyCard.CardTitleText}");
+
+                activeEnemyCardObject = Instantiate(CardPrefab, EnemyCardContainer);
+                var cardViz = activeEnemyCardObject.GetComponent<CardViz>();
+                cardViz.LoadCard(enemyCard);
+
+                // Ustawiamy tura na true po zagraniu karty przez przeciwnika
+                isTurnInProgress = true;
+            }
+        }
+
+        private System.Collections.IEnumerator RemoveCardsAfterDelay(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+
+            if (activePlayerCardObject != null)
+            {
+                Destroy(activePlayerCardObject);
+                activePlayerCardObject = null;
+            }
+
+            if (activeEnemyCardObject != null)
+            {
+                Destroy(activeEnemyCardObject);
+                activeEnemyCardObject = null;
+            }
+
+            EndTurn();
+        }
+
+        private void EndTurn()
+        {
+
+            isEndTurnButtonClicked = false;
+            isTurnInProgress = false;
+
+            EnemyPlayCard();
+
+            while (playerHand.Count < HandSize)
+            {
+                DrawCard();
+            }
+        }
+
+        public void OnEndTurnButtonClicked()
+        {
+            if (isEndTurnButtonClicked)
+                return;
+
+            isEndTurnButtonClicked = true;
+
+            if (PlayerCardContainer.childCount > 0)
+            {
+                GameObject playerCardObject = PlayerCardContainer.GetChild(0).gameObject;
+
+                Card currentPlayerCard = playerCardObject.GetComponent<CardViz>().GetCard();
+
+                if (currentPlayerCard != null)
+                {
+                    Debug.Log("Przycisk EndTurn zosta³ klikniêty. Karta gracza: " + currentPlayerCard.CardTitleText);
+
+                    ApplyCardEffects(currentPlayerCard, currentEnemyCard);
+
+                    StartCoroutine(RemoveCardsAfterDelay(1.5f));
+
+                    isTurnInProgress = false;
+                }
+                else
+                {
+                    Debug.LogError("Nie uda³o siê znaleŸæ obiektu Card w PlayerCardContainer.");
+                }
+            }
+            else
+            {
+                Debug.LogError("Brak karty w PlayerCardContainer.");
+            }
+        }
+
+        private void ReshuffleDeck()
+        {
+            currentDeck = new List<Card>(originalDeck);
+
+            foreach (var card in playerHand)
+            {
+                currentDeck.Remove(card);
+            }
+
+            Debug.Log("Talia gracza zosta³a przetasowana.");
+        }
+
+        private void ReshuffleEnemyDeck()
+        {
+            enemyCurrentDeck = new List<Card>(enemyOriginalDeck);
+            Debug.Log("Talia przeciwnika zosta³a przetasowana.");
+        }
+
+        private void ApplyCardEffects(Card playerCard, Card enemyCard)
+        {
+            int playerHealing = playerCard != null ? playerCard.Healing : 0;
+            int playerDamage = playerCard != null ? playerCard.Damage : 0;
+            int playerShield = playerCard != null ? playerCard.Shield : 0;
+            bool playerIgnoresBlock = playerCard != null && playerCard.IgnoreBlock;
+
+            int enemyHealing = enemyCard != null ? enemyCard.Healing : 0;
+            int enemyDamage = enemyCard != null ? enemyCard.Damage : 0;
+            int enemyShield = enemyCard != null ? enemyCard.Shield : 0;
+            bool enemyIgnoresBlock = enemyCard != null && enemyCard.IgnoreBlock;
+
+            currentPlayerHealth += playerHealing;
+            currentPlayerHealth = Mathf.Min(currentPlayerHealth, playerInfo.maxHealth); // Limit do maksymalnego zdrowia
+            Debug.Log($"Gracz uleczy³ siê o {playerHealing}. Aktualne zdrowie: {currentPlayerHealth}");
+
+            //Przeciwnik mo¿e leczyæ siê ponad limit maksymalnego zdrowia
+            enemyData.HealthPoints += enemyHealing;
+            Debug.Log($"Przeciwnik uleczy³ siê o {enemyHealing}. Aktualne zdrowie: {enemyData.HealthPoints}");
+
+            int playerEffectiveShield = playerShield;
+            int enemyEffectiveShield = enemyShield;
+
+            if (playerIgnoresBlock)
+            {
+                enemyEffectiveShield = 0;
+                Debug.Log("Gracz zignorowa³ tarczê przeciwnika.");
+            }
+
+            if (enemyIgnoresBlock)
+            {
+                playerEffectiveShield = 0;
+                Debug.Log("Przeciwnik zignorowa³ tarczê gracza.");
+            }
+
+            int playerDamageTaken = Mathf.Max(enemyDamage - playerEffectiveShield, 0);
+            int enemyDamageTaken = Mathf.Max(playerDamage - enemyEffectiveShield, 0);
+
+            currentPlayerHealth -= playerDamageTaken;
+            enemyData.HealthPoints -= enemyDamageTaken;
+
+            Debug.Log($"Gracz otrzyma³ {playerDamageTaken} obra¿eñ. Aktualne zdrowie gracza: {currentPlayerHealth}");
+            Debug.Log($"Przeciwnik otrzyma³ {enemyDamageTaken} obra¿eñ. Aktualne zdrowie przeciwnika: {enemyData.HealthPoints}");
+
+            UpdatePlayerHealthText();
+            UpdateEnemyHealthText();
+            if (currentPlayerHealth <= 0)
+            {
+                Debug.Log("Gracz zosta³ pokonany!");
+                SceneManager.LoadScene("MainMenu");
+            }
+
+            if (enemyData.HealthPoints <= 0)
+            {
+                Debug.Log("Przeciwnik zosta³ pokonany!");
+                SceneManager.LoadScene("SampleScene");
+            }
+        }
+
+        private void UpdatePlayerHealthText()
+        {
+            PlayerHealthText.text = "Health: " + currentPlayerHealth;
+        }
+
+        private void UpdateEnemyHealthText()
+        {
+            EnemyHealthText.text = "Health: " + enemyData.HealthPoints;
+        }
+
+        private void SetEnemyData(EnemyBattleData enemy)
+        {
+            EnemyNameText.text = enemy.Name;
+            EnemyHealthText.text = "Health: " + enemy.HealthPoints;
+        }
     }
-
-    private void StartPlayerTurn()
-    {
-        if (!battleOngoing) return;
-
-        Debug.Log("Tura gracza!");
-        playerTurn = true;
-
-        // Przygotowanie rêki gracza
-        DrawCardsForPlayer();
-    }
-
-    private void DrawCardsForPlayer()
-    {
-        // Opró¿nij rêkê
-        foreach (Transform child in Hand)
-        {
-            Destroy(child.gameObject);
-        }
-
-        // Dodaj 3 losowe karty
-        for (int i = 0; i < 3; i++)
-        {
-            GameObject card = CreateCard();
-            card.transform.SetParent(Hand, false);
-        }
-    }
-
-    private GameObject CreateCard()
-    {
-        if (CardPrefabs == null || CardPrefabs.Length == 0)
-        {
-            Debug.LogError("Brak przypisanych prefabów kart w BattleManager!");
-            return null;
-        }
-
-        // Wybierz losowy prefab
-        int randomIndex = Random.Range(0, CardPrefabs.Length);
-        GameObject cardPrefab = CardPrefabs[randomIndex];
-        GameObject newCard = Instantiate(cardPrefab);
-
-        // Za³aduj dane karty z talii gracza
-        Card cardData = GetRandomCardData();
-        Card cardComponent = newCard.GetComponent<Card>();
-        if (cardComponent != null && cardData != null)
-        {
-            cardComponent.SetCardData(cardData);
-        }
-        else
-        {
-            Debug.LogWarning("Prefab karty nie posiada komponentu 'Card' lub dane karty s¹ nieprawid³owe.");
-        }
-
-        return newCard;
-    }
-
-    private Card GetRandomCardData()
-    {
-        if (PlayerDeck == null || PlayerDeck.InitialDeck == null || PlayerDeck.InitialDeck.Count == 0)
-        {
-            Debug.LogError("Talia gracza jest pusta lub nie zosta³a przypisana w PlayerDeck!");
-            return null;
-        }
-
-        // Wybierz losow¹ kartê z talii
-        int randomIndex = Random.Range(0, PlayerDeck.InitialDeck.Count);
-        return PlayerDeck.InitialDeck[randomIndex];
-    }
-
-    public void OnPlayerCardSelected(CardClickHandler cardClickHandler)
-    {
-        if (!playerTurn || !battleOngoing)
-        {
-            Debug.LogError("Nie mo¿esz teraz zagraæ karty!");
-            return;
-        }
-
-        // Przenieœ kartê do obiektu PlayerCard
-        cardClickHandler.transform.SetParent(PlayerCard, false);
-
-        Debug.Log($"Gracz zagra³ kartê: {cardClickHandler.gameObject.name}");
-
-        // Oblicz efekty karty
-        CalculateDamage(cardClickHandler.gameObject);
-    }
-
-    private void CalculateDamage(GameObject playerCard)
-    {
-        Card playerCardData = playerCard.GetComponent<Card>();
-        if (playerCardData == null)
-        {
-            Debug.LogError("Wybrana karta nie posiada skryptu 'Card'!");
-            return;
-        }
-
-        // Obliczenia obra¿eñ
-        int playerDamage = playerCardData.Damage;
-        int enemyDamage = EnemyPlayedCard != null ? EnemyPlayedCard.Damage : 0;
-        int enemyHealing = EnemyPlayedCard != null ? EnemyPlayedCard.Healing : 0;
-
-        CurrentEnemy.HealthPoints -= playerDamage;
-        PlayerStats.Instance.CurrentHealth -= enemyDamage;
-        CurrentEnemy.HealthPoints += enemyHealing;
-
-        Debug.Log($"Gracz zadaje {playerDamage} obra¿eñ. HP przeciwnika: {CurrentEnemy.HealthPoints}");
-        Debug.Log($"Przeciwnik zadaje {enemyDamage} obra¿eñ. HP gracza: {PlayerStats.Instance.CurrentHealth}");
-
-        CheckBattleOutcome();
-    }
-
-    private void CheckBattleOutcome()
-    {
-        if (CurrentEnemy.HealthPoints <= 0)
-        {
-            EndBattle(true);
-        }
-        else if (PlayerStats.Instance.CurrentHealth <= 0)
-        {
-            EndBattle(false);
-        }
-        else
-        {
-            StartEnemyTurn();
-        }
-    }
-
-    public void EndBattle(bool playerWon)
-    {
-        battleOngoing = false;
-
-        if (playerWon)
-        {
-            Debug.Log("Gracz wygra³ walkê!");
-        }
-        else
-        {
-            Debug.Log("Gracz przegra³ walkê...");
-        }
-
-        // Zakoñczenie walki, przejœcie do sceny SampleScene
-        SceneManager.LoadScene("SampleScene");
-
-        // Mo¿esz tak¿e ukryæ postaæ, jeœli chcesz, by nie by³a widoczna w SampleScene
-        if (playerCharacter != null)
-        {
-            playerCharacter.SetActive(false); // Ukrywa postaæ przed za³adowaniem nowej sceny
-        }
-
-        CurrentEnemy = null;
-    }
-
 }

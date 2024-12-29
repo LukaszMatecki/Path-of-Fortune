@@ -1,59 +1,44 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class CardClickHandler : MonoBehaviour, IPointerClickHandler
+namespace GG
 {
-    public System.Action<CardClickHandler> OnCardClicked;
-
-    private Transform handContainer;
-
-    void Start()
+    public class CardClickHandler : MonoBehaviour, IPointerClickHandler
     {
-        // Przyk³ad przypisania handContainer, zak³adaj¹c, ¿e masz obiekt kontenera kart w scenie
-        Transform container = GameObject.Find("HandContainer")?.transform;
+        private BattleManager battleManager;
+        private Card card;
+        private GameObject cardObject;
 
-        if (container != null)
+        // Inicjalizacja
+        public void Initialize(BattleManager manager, Card card, GameObject cardObj)
         {
-            SetHandContainer(container);
-        }
-        else
-        {
-            Debug.LogError("Nie znaleziono obiektu 'HandContainer' w scenie!");
-        }
-    }
-
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        // Sprawdzenie, czy handContainer jest przypisany
-        if (handContainer == null)
-        {
-            Debug.LogError("HandContainer nie jest przypisany dla tej karty!");
-            return;
+            battleManager = manager;
+            this.card = card;
+            this.cardObject = cardObj;
         }
 
-        // Sprawdzenie, czy karta jest w rêce
-        if (transform.IsChildOf(handContainer))
+        // Obs³uguje klikniêcie na kartê
+        public void OnPointerClick(PointerEventData eventData)
         {
-            OnCardClicked?.Invoke(this);
-            Debug.Log($"Klikniêto kartê: {gameObject.name}");
+            
+            if (battleManager != null && card != null)
+            {
+                if (transform.IsChildOf(battleManager.HandContainer) && battleManager.PlayerCardContainer.childCount == 0)
+                {
+                    battleManager.PlayCard(card, cardObject);
+                    Debug.Log($"Klikniêto kartê: {gameObject.name}");
+                }
+                else if (transform.IsChildOf(battleManager.PlayerCardContainer) && battleManager.isTurnInProgress)
+                {
+                    // Jeœli tura trwa, przywracamy kartê do rêki
+                    battleManager.OnPlayerCardClicked(cardObject);
+                    Debug.Log($"Karta {gameObject.name} przeniesiona z powrotem do rêki.");
+                }
+                else
+                {
+                    Debug.LogWarning("Nie mo¿esz klikn¹æ karty, która nie znajduje siê w rêce, zosta³a ju¿ zagrana lub tura jest w toku.");
+                }
+            }
         }
-        else
-        {
-            Debug.LogWarning("Nie mo¿esz klikn¹æ karty, która nie znajduje siê w rêce gracza.");
-        }
-    }
-
-    // Funkcja do ustawienia handContainer
-    public void SetHandContainer(Transform container)
-    {
-        if (container == null)
-        {
-            Debug.LogError("Kontener kart jest null! Nie mogê ustawiæ handContainer.");
-            return;
-        }
-
-        handContainer = container;
-        Debug.Log("Kontener zosta³ przypisany: " + handContainer.name);
     }
 }
