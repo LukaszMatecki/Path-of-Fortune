@@ -6907,7 +6907,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loadingScreen: {fileID: 1202226494}
-  LoadingBar: {fileID: 1688371028}
+  loadingBar: {fileID: 1688371028}
   hintText: {fileID: 524775720}
   hints:
   - Use a dice to move
@@ -7609,9 +7609,13 @@ MonoBehaviour:
     playerPositionX: 0
     playerPositionY: 0
     playerPositionZ: 0
+    lightPositionX: 0
+    lightPositionY: 0
+    lightPositionZ: 0
+    lightRotationX: 0
+    lightRotationY: 0
+    lightRotationZ: 0
   playerPosition: {x: 0, y: 0, z: 0}
-  playerHealth: 0
-  playerScore: 0
 --- !u!4 &1811598076
 Transform:
   m_ObjectHideFlags: 0

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEditor.Overlays;
 
 public class DirectionalLightController : MonoBehaviour
 {
@@ -25,12 +26,21 @@ public class DirectionalLightController : MonoBehaviour
     [SerializeField] private Button pauseButton;
     [SerializeField] private TextMeshProUGUI clockText; // Tekst wyœwietlaj¹cy godzinê
 
-    private float timeInMinutes = 0f; // Czas w minutach (od 00:00 do 23:59)
+    public float timeInMinutes = 0f; // Czas w minutach (od 00:00 do 23:59)
 
     private void Start()
-    {
-        timeInMinutes = 14f * 60f;
-        
+    { // SprawdŸ, czy czas zosta³ wczytany z GameDataManager
+        if (GameDataManager.Instance?.LoadedSaveData != null)
+        {
+            timeInMinutes = GameDataManager.Instance.LoadedSaveData.gameTimeInMinutes; // Przypisanie wczytanego czasu
+            Debug.Log($"Wczytano czas gry: {timeInMinutes} minut");
+        }
+        else
+        {
+            timeInMinutes = 14f * 60f; // Domyœlny czas (14:00)
+            Debug.Log("Ustawiono domyœlny czas: 14:00");
+        }
+
         if (increaseButton != null)
             increaseButton.onClick.AddListener(IncreaseSpeed);
 

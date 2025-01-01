@@ -9,6 +9,8 @@ using UnityEngine.UI;
 [Serializable]
 public class SaveData
 {
+    public float gameTimeInMinutes;
+
     public string saveName;
     public string saveTime;
     public string playTime;
@@ -16,7 +18,16 @@ public class SaveData
     public float playerPositionX;
     public float playerPositionY;
     public float playerPositionZ;
-    public Dictionary<string, object> gameData; // Dodaj dane specyficzne dla Twojej gry
+
+    public float lightPositionX;
+    public float lightPositionY;
+    public float lightPositionZ;
+    public float lightRotationX;
+    public float lightRotationY;
+    public float lightRotationZ;
+
+
+    public Dictionary<string, object> gameData;
 }
 
 public class SaveSystem : MonoBehaviour
@@ -24,9 +35,10 @@ public class SaveSystem : MonoBehaviour
     public static SaveSystem Instance;
     private string saveDirectory;
 
-
+    [SerializeField] private DirectionalLightController gameTimer;
     [SerializeField] private GameObject player;
     [SerializeField] private GameObject overwritePopup;
+    [SerializeField] private Light directionalLight;
     [SerializeField] private Button overwriteConfirmButton;
     [SerializeField] private Button overwriteCancelButton;
     [SerializeField] private TextMeshProUGUI errorMessageText;
@@ -37,22 +49,26 @@ public class SaveSystem : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            saveDirectory = Path.Combine(Application.persistentDataPath, "Saves");
-            if (!Directory.Exists(saveDirectory))
-                Directory.CreateDirectory(saveDirectory);
-            DontDestroyOnLoad(gameObject);
-        }
-        else
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
+            return;
         }
+        Instance = this;
+
+        saveDirectory = Path.Combine(Application.persistentDataPath, "Saves");
+
+        if (!Directory.Exists(saveDirectory))
+            Directory.CreateDirectory(saveDirectory);
+
+        //DontDestroyOnLoad(gameObject);
+        Debug.Log("SaveSystem initialized.");
     }
 
     private void Start()
     {
+        Debug.Log("SaveSystem Start method called.");
+        isSaving = false;
         saveButton.onClick.RemoveAllListeners();
         saveButton.onClick.AddListener(OnSaveButtonClicked);
         saveNameInputField.onValueChanged.AddListener(OnSaveNameChanged);
@@ -78,9 +94,21 @@ public class SaveSystem : MonoBehaviour
 
     private void OnSaveButtonClicked()
     {
-        if (isSaving) return; // Zabezpieczenie przed wielokrotnym zapisem
+        Debug.Log("Save button clicked.");
+        if (SaveSystem.Instance == null)
+        {
+            Debug.LogError("SaveSystem instance is null.");
+            return;
+        }
+
+        if (isSaving)
+        {
+            Debug.Log("Save operation already in progress.");
+            return;
+        }
 
         string saveName = saveNameInputField.text.Trim();
+        Debug.Log($"Attempting to save game with name: {saveName}");
 
         if (string.IsNullOrEmpty(saveName))
         {
@@ -122,23 +150,43 @@ public class SaveSystem : MonoBehaviour
 
     private IEnumerator SaveGameCoroutine(string saveName)
     {
-        if (isSaving) yield break;
-        isSaving = true;
+        if (isSaving)
+        {
+            Debug.Log("Save operation already in progress.");
+            yield break;
+        }
 
+        isSaving = true;
+        Debug.Log($"Starting save operation for: {saveName}");
         yield return new WaitForEndOfFrame();
 
-        Texture2D screenshot = CaptureScreenshot();
-        Dictionary<string, object> gameData = new Dictionary<string, object>();
+        Texture2D screenshot = null;
 
-        SaveGame(saveName, screenshot, gameData);
+        try
+        {
+            screenshot = CaptureScreenshot();
+            Debug.Log("Screenshot captured successfully.");
 
-        isSaving = false;
+            Dictionary<string, object> gameData = new Dictionary<string, object>();
+            SaveGame(saveName, screenshot, gameData);
+
+            Debug.Log("Game saved successfully.");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Error during save operation: {ex.Message}");
+        }
+        finally
+        {
+            isSaving = false;
+        }
     }
 
     public void SaveGame(string saveName, Texture2D screenshot, Dictionary<string, object> gameData)
     {
         string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         string screenshotPath = Path.Combine(saveDirectory, $"{saveName}_screenshot.png");
+        float gameTimeInMinutes = gameTimer.timeInMinutes;
 
         File.WriteAllBytes(screenshotPath, screenshot.EncodeToPNG());
 
@@ -148,11 +196,24 @@ public class SaveSystem : MonoBehaviour
             saveTime = timestamp,
             playTime = TimeSpan.FromSeconds(Time.timeSinceLevelLoad).ToString(@"hh\:mm\:ss"),
             screenshotPath = screenshotPath,
+            gameTimeInMinutes = gameTimeInMinutes,
             playerPositionX = player.transform.position.x,
             playerPositionY = player.transform.position.y,
             playerPositionZ = player.transform.position.z,
+            lightPositionX = directionalLight.transform.position.x,
+            lightPositionY = directionalLight.transform.position.y,
+            lightPositionZ = directionalLight.transform.position.z,
+            lightRotationX = directionalLight.transform.eulerAngles.x,
+            lightRotationY = directionalLight.transform.eulerAngles.y,
+            lightRotationZ = directionalLight.transform.eulerAngles.z,
+
+            
+
             gameData = gameData
         };
+
+        Debug.Log($"Saving light position: {directionalLight.transform.position}");
+        Debug.Log($"Saving light rotation: {directionalLight.transform.eulerAngles}");
 
         string saveFilePath = Path.Combine(saveDirectory, $"{saveName}.json");
         File.WriteAllText(saveFilePath, JsonUtility.ToJson(saveData));
@@ -228,6 +289,27 @@ public class SaveSystem : MonoBehaviour
         else
         {
             Debug.LogWarning("Player object is not assigned!");
+        }
+
+        if (directionalLight != null)
+        {
+            directionalLight.transform.position = new Vector3(
+                saveData.lightPositionX,
+                saveData.lightPositionY,
+                saveData.lightPositionZ
+            );
+
+            directionalLight.transform.eulerAngles = new Vector3(
+                saveData.lightRotationX,
+                saveData.lightRotationY,
+                saveData.lightRotationZ
+            );
+
+            Debug.Log($"Light position and rotation loaded: {directionalLight.transform.position}, {directionalLight.transform.eulerAngles}");
+        }
+        else
+        {
+            Debug.LogWarning("Directional Light object is not assigned!");
         }
     }
 
