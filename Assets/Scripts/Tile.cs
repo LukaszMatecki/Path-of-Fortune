@@ -1,3 +1,4 @@
+using GG;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -90,6 +91,56 @@ public class Tile : MonoBehaviour
 
         //Debug.Log("Brak przeciwnika na polu: " + tilePosition);
         return false;
+    }
+
+    public bool HasChest()
+    {
+        Vector3 tilePosition = transform.position;
+        Tilemap overGroundTilemap = GameObject.Find("Tilemap_OverGround").GetComponent<Tilemap>();
+
+        Vector3 worldPosition = overGroundTilemap.WorldToCell(tilePosition);
+        Collider[] colliders = Physics.OverlapBox(tilePosition, new Vector3(0.5f, 0.5f, 0.5f));
+
+        bool chestFound = false;
+        foreach (var collider in colliders)
+        {
+            if (collider != null && collider.CompareTag("Chest"))
+            {
+                chestFound = true;
+                Debug.Log("Skrzynka wykryta na polu: " + tilePosition + ", Obiekt: " + collider.gameObject.name);
+            }
+        }
+
+        if (chestFound)
+        {
+           Debug.Log("Na polu: " + tilePosition + " znajduje siê skrzynka.");
+            return true;
+        }
+
+        Debug.Log("Brak skrzynki na polu: " + tilePosition);
+        return false;
+    }
+
+    public void InteractWithChest()
+    {
+        if (HasChest())
+        {
+            // Otwórz skrzynkê
+            Debug.Log("Skrzynka otwarta!");
+
+            // Dodaj 10 monet
+            PlayerManager.Instance.AddCoins(10);
+
+            // Dezaktywuj skrzynkê
+            Collider[] colliders = Physics.OverlapBox(transform.position, new Vector3(0.5f, 0.5f, 0.5f));
+            foreach (var collider in colliders)
+            {
+                if (collider.CompareTag("Chest"))
+                {
+                    collider.gameObject.SetActive(false);
+                }
+            }
+        }
     }
 
 

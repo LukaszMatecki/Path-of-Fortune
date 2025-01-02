@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using GG;
 using Unity.VisualScripting;
+using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
@@ -222,6 +223,7 @@ public class TileSelector : MonoBehaviour
 
                     // Dodajemy sprawdzenie, czy komponent Enemy jest przypisany
                     Enemy enemy = hit.collider.GetComponent<Enemy>();
+                    
                     if (enemy != null)
                     {
                         Debug.Log($"Przeciwnik {enemy.name} (zdrowie = {enemy.HealthPoints} diff={enemy.DifficultyLevel} znaleziony na kafelku {tile.name}.");
@@ -239,6 +241,15 @@ public class TileSelector : MonoBehaviour
                         Debug.Log("Rozpoczêto walkê z przeciwnikiem.");
 
                         yield break;
+                    }
+
+                    Chest chest = hit.collider.GetComponent<Chest>();
+                    if (chest != null)
+                    {
+                        Debug.Log($"Znaleziono skrzynkê na kafelku {tile.name}.");
+                        chest.OpenChest();
+                        PlayerManager.Instance.AddCoins(chest.coins);               
+                        chest.CloseChest();
                     }
                     else
                     {
@@ -317,6 +328,7 @@ public class TileSelector : MonoBehaviour
 
                 // Sprawdzamy, czy na polu nie ma przeszkód oraz czy jest dostêpne do zaznaczenia
                 bool hasObstacle = tile.HasObstacle();
+                bool hasChest = tile.HasChest();
                 bool isInMaxRange = selectedTiles.Count < maxSteps;
 
                 if (hasObstacle)
@@ -324,6 +336,12 @@ public class TileSelector : MonoBehaviour
                     Debug.Log("Pole ma przeszkodê: " + tile.name);
                     tile.Highlight(Color.red);
                     tile.IsAvailableForSelection = false;
+                }
+                else if(hasChest)
+                {
+                    Debug.Log("Pole ma skrzynke: " + tile.name);
+                    tile.Highlight(new Color(1.2f, 1f, 0f));
+                    tile.IsAvailableForSelection = true;
                 }
                 else if (!isInMaxRange)
                 {
