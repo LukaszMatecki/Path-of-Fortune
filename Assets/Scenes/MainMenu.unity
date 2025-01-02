@@ -5631,7 +5631,7 @@ PrefabInstance:
     - target: {fileID: 8936334994876616767, guid: fb969f87d6229ce4da25fa5e87950f49, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 064df71df088bcf4aa33e70a7ebdd421, type: 3}
+      objectReference: {fileID: 21300000, guid: a7534d871a232ca488876ff0d10ff69e, type: 3}
     - target: {fileID: 9200593714156137256, guid: fb969f87d6229ce4da25fa5e87950f49, type: 3}
       propertyPath: m_TargetGraphic
       value: 
@@ -7602,6 +7602,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LoadedSaveData:
+    gameTimeInMinutes: 0
     saveName: 
     saveTime: 
     playTime: 

@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 438344852888611338, guid: 480b7037f7430f64ca7c903da4898e33, type: 3}
+      propertyPath: m_text
+      value: Spanish
+      objectReference: {fileID: 0}
     - target: {fileID: 860462948126667895, guid: 480b7037f7430f64ca7c903da4898e33, type: 3}
       propertyPath: m_Name
       value: LanguageScrollView Variant
@@ -162,7 +166,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5175453033426577700, guid: 480b7037f7430f64ca7c903da4898e33, type: 3}
       propertyPath: m_Size
-      value: 0.39540452
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5175453033426577700, guid: 480b7037f7430f64ca7c903da4898e33, type: 3}
       propertyPath: m_Value
@@ -254,7 +258,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5825273914770058235, guid: 480b7037f7430f64ca7c903da4898e33, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 208.73915
+      value: 0.00000166893
       objectReference: {fileID: 0}
     - target: {fileID: 7349869322636301311, guid: 480b7037f7430f64ca7c903da4898e33, type: 3}
       propertyPath: m_AnchorMax.y

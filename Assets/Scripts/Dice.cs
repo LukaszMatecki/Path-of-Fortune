@@ -12,7 +12,7 @@ public class Dice : MonoBehaviour
     [SerializeField] private Button moveButton;
     private TileSelector tileSelector;
 
-    private bool hasRolled = false;
+    public bool hasRolled = false;
 
     private void Start()
     {

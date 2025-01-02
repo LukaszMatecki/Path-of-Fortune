@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using GG;
-using Unity.VisualScripting;
-using UnityEditor.IMGUI.Controls;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
@@ -19,6 +18,16 @@ public class TileSelector : MonoBehaviour
     public GameObject playerCharacter;
     private List<Tile> selectedTiles = new List<Tile>();
     private bool isProcessingMoves = false;
+
+
+    public TMP_Text feedbackPanelText; // Panel tekstowy przypisany w Inspektorze
+    public int maxClicksBeforeFeedback = 5; // Maksymalna liczba klikniêæ przed pokazaniem komunikatu
+    public float clickResetTime = 3f; // Czas w sekundach do zresetowania licznika klikniêæ
+
+    private int leftClickCount = 0; // Licznik klikniêæ lewego przycisku myszy
+    private float lastClickTime = 0f; // Czas ostatniego klikniêcia
+
+    public Dice dice;
 
     void Start()
     {
@@ -38,17 +47,76 @@ public class TileSelector : MonoBehaviour
             characterAnimator.SetBool("isWalking", false);
         }
 
-        if (Input.GetMouseButtonDown(0))
+        // SprawdŸ, czy gracz rzuci³ kostk¹
+        if (dice.hasRolled == true)
         {
-            Debug.Log("LPM klikniêty - próba zaznaczenia pola.");
-            TrySelectTile();
+            if (Input.GetMouseButtonDown(0))
+            {
+                Debug.Log("LPM klikniêty - próba zaznaczenia pola.");
+                TrySelectTile();
+            }
+            else if (Input.GetMouseButtonDown(1))
+            {
+                Debug.Log("PPM klikniêty - próba odznaczenia pola.");
+                TryDeselectTile();
+            }
         }
-        else if (Input.GetMouseButtonDown(1))
+        else 
         {
-            Debug.Log("PPM klikniêty - próba odznaczenia pola.");
-            TryDeselectTile();
+            if (Input.GetMouseButtonDown(0))
+            {
+                Debug.Log("LPM klikniêty - próba zaznaczenia pola.");
+                TrySelectTile();
+                TrackLeftClick();
+            }
+            else if (Input.GetMouseButtonDown(1))
+            {
+                Debug.Log("PPM klikniêty - próba odznaczenia pola.");
+                TryDeselectTile();
+            }
         }
     }
+
+    // Funkcja œledz¹ca klikniêcia lewego przycisku myszy
+    private void TrackLeftClick()
+    {
+        // SprawdŸ, czy nale¿y zresetowaæ licznik
+        if (Time.time - lastClickTime > clickResetTime)
+        {
+            leftClickCount = 0; // Reset licznika
+        }
+
+        leftClickCount++;
+        lastClickTime = Time.time;
+
+        // SprawdŸ, czy licznik przekroczy³ próg
+        if (leftClickCount >= maxClicksBeforeFeedback)
+        {
+            ShowFeedbackMessage("You need to roll the dice first!");
+            leftClickCount = 0; // Zresetuj licznik po wyœwietleniu komunikatu
+        }
+    }
+
+    // Funkcja wyœwietlaj¹ca komunikat w panelu
+    private void ShowFeedbackMessage(string message)
+    {
+        if (feedbackPanelText != null)
+        {
+            feedbackPanelText.text = message;
+            feedbackPanelText.gameObject.SetActive(true); // Upewnij siê, ¿e panel jest widoczny
+            Invoke(nameof(HideFeedbackMessage), 5f); // Ukryj komunikat po 5 sekundach
+        }
+    }
+
+    // Ukrywanie komunikatu
+    private void HideFeedbackMessage()
+    {
+        if (feedbackPanelText != null)
+        {
+            feedbackPanelText.gameObject.SetActive(false);
+        }
+    }
+
 
     public void SetMaxSteps(int steps)
     {

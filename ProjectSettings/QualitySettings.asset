@@ -38,7 +38,7 @@ QualitySettings:
     enableLODCrossFade: 1
     streamingMipmapsActive: 1
     streamingMipmapsAddAllCameras: 1
-    streamingMipmapsMemoryBudget: 1024
+    streamingMipmapsMemoryBudget: 2056
     streamingMipmapsRenderersPerFrame: 512
     streamingMipmapsMaxLevelReduction: 2
     streamingMipmapsMaxFileIORequests: 1024
@@ -128,7 +128,7 @@ QualitySettings:
     globalTextureMipmapLimit: 2
     textureMipmapLimitSettings: []
     anisotropicTextures: 0
-    antiAliasing: 0
+    antiAliasing: 2
     softParticles: 0
     softVegetation: 1
     realtimeReflectionProbes: 0
