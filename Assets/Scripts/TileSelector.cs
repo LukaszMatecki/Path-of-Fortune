@@ -31,7 +31,7 @@ public class TileSelector : MonoBehaviour
 
     void Start()
     {
-
+        RestorePlayerPosition();
     }
 
     void Update()
@@ -47,7 +47,7 @@ public class TileSelector : MonoBehaviour
             characterAnimator.SetBool("isWalking", false);
         }
 
-        // SprawdŸ, czy gracz rzuci³ kostk¹
+
         if (dice.hasRolled == true)
         {
             if (Input.GetMouseButtonDown(0))
@@ -77,38 +77,36 @@ public class TileSelector : MonoBehaviour
         }
     }
 
-    // Funkcja œledz¹ca klikniêcia lewego przycisku myszy
+
     private void TrackLeftClick()
     {
-        // SprawdŸ, czy nale¿y zresetowaæ licznik
+
         if (Time.time - lastClickTime > clickResetTime)
         {
-            leftClickCount = 0; // Reset licznika
+            leftClickCount = 0;
         }
 
         leftClickCount++;
         lastClickTime = Time.time;
 
-        // SprawdŸ, czy licznik przekroczy³ próg
+
         if (leftClickCount >= maxClicksBeforeFeedback)
         {
             ShowFeedbackMessage("You need to roll the dice first!");
-            leftClickCount = 0; // Zresetuj licznik po wyœwietleniu komunikatu
+            leftClickCount = 0;
         }
     }
 
-    // Funkcja wyœwietlaj¹ca komunikat w panelu
     private void ShowFeedbackMessage(string message)
     {
         if (feedbackPanelText != null)
         {
             feedbackPanelText.text = message;
-            feedbackPanelText.gameObject.SetActive(true); // Upewnij siê, ¿e panel jest widoczny
-            Invoke(nameof(HideFeedbackMessage), 5f); // Ukryj komunikat po 5 sekundach
+            feedbackPanelText.gameObject.SetActive(true);
+            Invoke(nameof(HideFeedbackMessage), 5f);
         }
     }
 
-    // Ukrywanie komunikatu
     private void HideFeedbackMessage()
     {
         if (feedbackPanelText != null)
@@ -217,6 +215,7 @@ public class TileSelector : MonoBehaviour
 
     public void OnReadyButtonClicked()
     {
+        
         if (isProcessingMoves)
         {
             characterAnimator.SetBool("isWalking", true);
@@ -226,7 +225,7 @@ public class TileSelector : MonoBehaviour
 
         characterAnimator.SetBool("isWalking", true);
         Debug.Log("Przycisk 'Ready' klikniêty - rozpoczynanie ruchu.");
-        isProcessingMoves = true; // Ustawiamy flagê na true
+        isProcessingMoves = true;
         StartCoroutine(MoveCharacterAlongPath());
     }
 
@@ -234,10 +233,26 @@ public class TileSelector : MonoBehaviour
     {
         Debug.Log("Rozpoczynanie walki z przeciwnikiem");
 
+        if (character != null)
+        {
+            PlayerInfo.Instance.PlayerPosition = character.transform.position;
+        }
+
         GameManager.Instance.SetCurrentEnemy(enemy);
 
-        // Za³aduj scenê walki
         SceneManager.LoadScene("Fight");
+        //if (enemy != null && enemy.gameObject != null)
+        //{
+        //    Destroy(enemy.gameObject);
+        //    Debug.Log($"Usuniêto model przeciwnika: {enemy.name}");
+        //}
+    }
+    private void RestorePlayerPosition()
+    {
+        if (character != null && PlayerInfo.Instance.PlayerPosition != Vector3.zero)
+        {
+            character.transform.position = PlayerInfo.Instance.PlayerPosition;
+        }
     }
 
 
@@ -289,22 +304,16 @@ public class TileSelector : MonoBehaviour
                 {
                     Debug.Log($"Raycast trafi³ w obiekt: {hit.collider.name}");
 
-                    // Dodajemy sprawdzenie, czy komponent Enemy jest przypisany
                     Enemy enemy = hit.collider.GetComponent<Enemy>();
                     
                     if (enemy != null)
                     {
                         Debug.Log($"Przeciwnik {enemy.name} (zdrowie = {enemy.HealthPoints} diff={enemy.DifficultyLevel} znaleziony na kafelku {tile.name}.");
 
-                        // Przypisanie przeciwnika do BattleManager
-                        //BattleManager.Instance.CurrentEnemy = enemy;
-
-                        // Zatrzymanie ruchu postaci
                         characterAnimator.SetBool("isWalking", false);
                         StopAllCoroutines();
                         Debug.Log("Zatrzymano dalszy ruch postaci.");
 
-                        // Rozpoczêcie walki
                         StartBattle(enemy);
                         Debug.Log("Rozpoczêto walkê z przeciwnikiem.");
 
@@ -316,7 +325,8 @@ public class TileSelector : MonoBehaviour
                     {
                         Debug.Log($"Znaleziono skrzynkê na kafelku {tile.name}.");
                         chest.OpenChest();
-                        PlayerManager.Instance.AddCoins(chest.coins);               
+                        PlayerManager.Instance.AddCoins(chest.coins);   
+                        PlayerInfo.Instance.ChangeMaxHealth(1);
                         chest.CloseChest();
                     }
                     else
@@ -350,6 +360,7 @@ public class TileSelector : MonoBehaviour
 
             characterAnimator.SetBool("isWalking", false);
             isProcessingMoves = false;
+            dice.hasRolled = false;
         }
     }
 
@@ -370,31 +381,26 @@ public class TileSelector : MonoBehaviour
 
     private void UpdateTileHighlights()
     {
-        // Resetujemy wszystkie kafelki na bia³e
         foreach (Tile tile in UnityEngine.Object.FindObjectsByType<Tile>(UnityEngine.FindObjectsSortMode.None))
         {
             if (!selectedTiles.Contains(tile))
             {
                 tile.Highlight(Color.white);
-                tile.IsAvailableForSelection = false; // Domyœlnie pole nie jest dostêpne
+                tile.IsAvailableForSelection = false;
             }
         }
 
-        // ZnajdŸ przyleg³e do ostatniego zaznaczonego lub startowego
         Tile referenceTile = selectedTiles.Count > 0 ? selectedTiles[selectedTiles.Count - 1] : startingTile;
 
-        // Iterujemy po wszystkich kafelkach
         foreach (Tile tile in UnityEngine.Object.FindObjectsByType<Tile>(UnityEngine.FindObjectsSortMode.None))
         {
             if (tile == referenceTile || selectedTiles.Contains(tile))
-                continue;  // Pomijamy ju¿ zaznaczone kafelki
+                continue;
 
-            // Sprawdzamy, czy pole jest s¹siednie do ostatniego zaznaczonego
             if (tile.IsAdjacent(referenceTile))
             {
                 Debug.Log("Sprawdzanie s¹siedniego pola: " + tile.name);
 
-                // Sprawdzamy, czy na polu nie ma przeszkód oraz czy jest dostêpne do zaznaczenia
                 bool hasObstacle = tile.HasObstacle();
                 bool hasChest = tile.HasChest();
                 bool isInMaxRange = selectedTiles.Count < maxSteps;

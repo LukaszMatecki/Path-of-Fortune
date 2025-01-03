@@ -2,13 +2,15 @@ using UnityEngine;
 
 public class PlayerInfo : MonoBehaviour
 {
-    public static PlayerInfo Instance; // Singleton
+    public static PlayerInfo Instance { get; private set; }
 
-    public int maxHealth = 5; // Bazowe zdrowie
+    public Vector3 PlayerPosition { get; set; } = Vector3.zero;
+
+    public int maxHealth = 5;
 
     private void Awake()
     {
-        // Jeœli instancja ju¿ istnieje, usuñ ten obiekt (zapewnia jedn¹ instancjê)
+       
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -16,11 +18,11 @@ public class PlayerInfo : MonoBehaviour
         else
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // Zapewnia, ¿e ten obiekt przetrwa prze³adowanie sceny
+            DontDestroyOnLoad(gameObject);
         }
     }
 
-    // Funkcja zmieniaj¹ca maksymalne zdrowie
+
     public void ChangeMaxHealth(int amountToIncrease)
     {
         maxHealth += amountToIncrease;

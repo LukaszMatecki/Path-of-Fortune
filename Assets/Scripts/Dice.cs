@@ -14,6 +14,7 @@ public class Dice : MonoBehaviour
 
     public bool hasRolled = false;
 
+
     private void Start()
     {
         img = GetComponent<Image>();
@@ -47,8 +48,17 @@ public class Dice : MonoBehaviour
 
     private void OnRollButtonClicked()
     {
-        ResetAfterMove();
-        StartCoroutine(RollTheDice());
+        
+        if (hasRolled == false)
+        {
+            ResetAfterMove();
+            StartCoroutine(RollTheDice());
+        }
+        else
+        {
+            Debug.Log("w tej turze wykonano ju¿ ruch");
+        }
+
     }
 
     private IEnumerator RollTheDice()
