@@ -1,3 +1,4 @@
+using System;
 using GG;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -9,10 +10,12 @@ public class Tile : MonoBehaviour
     private Renderer tileRenderer;
     private Color originalColor;
 
+
     void Awake()
     {
         tileRenderer = GetComponent<Renderer>();
         originalColor = tileRenderer.material.color;
+
     }
 
     public void Highlight(Color color)
@@ -52,17 +55,17 @@ public class Tile : MonoBehaviour
             if (collider != null && collider.CompareTag("Obstacle"))
             {
                 obstacleFound = true;
-                Debug.Log("Przeszkoda wykryta na polu: " + tilePosition + ", Obiekt: " + collider.gameObject.name);
+                //Debug.Log("Przeszkoda wykryta na polu: " + tilePosition + ", Obiekt: " + collider.gameObject.name);
             }
         }
 
         if (obstacleFound)
         {
-            Debug.Log("Na polu: " + tilePosition + " znajduje siê przeszkoda.");
+            //Debug.Log("Na polu: " + tilePosition + " znajduje siê przeszkoda.");
             return true;
         }
 
-        Debug.Log("Brak przeszkody na polu: " + tilePosition);
+        //Debug.Log("Brak przeszkody na polu: " + tilePosition);
         return false;
     }
     public bool HasEnemy()
@@ -107,17 +110,17 @@ public class Tile : MonoBehaviour
             if (collider != null && collider.CompareTag("Chest"))
             {
                 chestFound = true;
-                Debug.Log("Skrzynka wykryta na polu: " + tilePosition + ", Obiekt: " + collider.gameObject.name);
+                //Debug.Log("Skrzynka wykryta na polu: " + tilePosition + ", Obiekt: " + collider.gameObject.name);
             }
         }
 
         if (chestFound)
         {
-           Debug.Log("Na polu: " + tilePosition + " znajduje siê skrzynka.");
+           //Debug.Log("Na polu: " + tilePosition + " znajduje siê skrzynka.");
             return true;
         }
 
-        Debug.Log("Brak skrzynki na polu: " + tilePosition);
+        //Debug.Log("Brak skrzynki na polu: " + tilePosition);
         return false;
     }
 
@@ -126,7 +129,7 @@ public class Tile : MonoBehaviour
         if (HasChest())
         {
             // Otwórz skrzynkê
-            Debug.Log("Skrzynka otwarta!");
+            //Debug.Log("Skrzynka otwarta!");
 
             // Dodaj 10 monet
             PlayerManager.Instance.AddCoins(10);

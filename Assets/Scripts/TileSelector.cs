@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using GG;
 using TMPro;
@@ -15,10 +16,9 @@ public class TileSelector : MonoBehaviour
     public Tilemap tilemapGround;
     public Tilemap tilemapOverGround;
     public bool isActive = true;
-    public GameObject playerCharacter;
+    //public GameObject playerCharacter;
     private List<Tile> selectedTiles = new List<Tile>();
     private bool isProcessingMoves = false;
-
 
     public TMP_Text feedbackPanelText; // Panel tekstowy przypisany w Inspektorze
     public int maxClicksBeforeFeedback = 5; // Maksymalna liczba klikniêæ przed pokazaniem komunikatu
@@ -27,13 +27,16 @@ public class TileSelector : MonoBehaviour
     private int leftClickCount = 0; // Licznik klikniêæ lewego przycisku myszy
     private float lastClickTime = 0f; // Czas ostatniego klikniêcia
 
+    public Vector3 TileUnderCharacter;
+
     public Dice dice;
+
 
     void Start()
     {
         RestorePlayerPosition();
+        SetStartingTileFromPlayerPosition();
     }
-
     void Update()
     {
         if (!isActive) return;
@@ -75,9 +78,9 @@ public class TileSelector : MonoBehaviour
                 TryDeselectTile();
             }
         }
+
+
     }
-
-
     private void TrackLeftClick()
     {
 
@@ -96,7 +99,6 @@ public class TileSelector : MonoBehaviour
             leftClickCount = 0;
         }
     }
-
     private void ShowFeedbackMessage(string message)
     {
         if (feedbackPanelText != null)
@@ -106,7 +108,6 @@ public class TileSelector : MonoBehaviour
             Invoke(nameof(HideFeedbackMessage), 5f);
         }
     }
-
     private void HideFeedbackMessage()
     {
         if (feedbackPanelText != null)
@@ -114,8 +115,6 @@ public class TileSelector : MonoBehaviour
             feedbackPanelText.gameObject.SetActive(false);
         }
     }
-
-
     public void SetMaxSteps(int steps)
     {
         maxSteps = steps;
@@ -125,25 +124,24 @@ public class TileSelector : MonoBehaviour
     {
         UpdateTileHighlights();
     }
-
     private void TrySelectTile()
     {
         if (selectedTiles.Count >= maxSteps)
         {
-            Debug.Log("Osi¹gniêto maksymaln¹ liczbê zaznaczeñ.");
+            //Debug.Log("Osi¹gniêto maksymaln¹ liczbê zaznaczeñ.");
             return;
         }
 
         Tile tile = GetTileUnderMouse();
         if (tile == null)
         {
-            Debug.Log("Nie wykryto ¿adnego pola pod myszk¹.");
+            //Debug.Log("Nie wykryto ¿adnego pola pod myszk¹.");
             return;
         }
 
         if (selectedTiles.Contains(tile))
         {
-            Debug.Log("To pole jest ju¿ zaznaczone.");
+            //Debug.Log("To pole jest ju¿ zaznaczone.");
             return;
         }
 
@@ -153,17 +151,17 @@ public class TileSelector : MonoBehaviour
 
         if (isAdjacent)
         {
-            Debug.Log("Pole przyleg³e: " + tile.name);
+            //Debug.Log("Pole przyleg³e: " + tile.name);
 
             if (!tile.HasObstacle() && tile.IsAvailableForSelection)
             {
                 tile.Highlight(Color.cyan);
                 selectedTiles.Add(tile);
-                Debug.Log("Pole zaznaczone: " + tile.name);
+                //Debug.Log("Pole zaznaczone: " + tile.name);
             }
             else
             {
-                Debug.Log("Pole ma przeszkodê lub jest niedostêpne: " + tile.name);
+                //Debug.Log("Pole ma przeszkodê lub jest niedostêpne: " + tile.name);
             }
         }
         else
@@ -173,19 +171,18 @@ public class TileSelector : MonoBehaviour
 
         UpdateTileHighlights();
     }
-
     private void TryDeselectTile()
     {
         Tile tile = GetTileUnderMouse();
         if (tile == null)
         {
-            Debug.Log("Nie wykryto ¿adnego pola pod myszk¹ do odznaczenia.");
+            //Debug.Log("Nie wykryto ¿adnego pola pod myszk¹ do odznaczenia.");
             return;
         }
 
         if (!selectedTiles.Contains(tile))
         {
-            Debug.Log("To pole nie jest zaznaczone.");
+            //Debug.Log("To pole nie jest zaznaczone.");
             return;
         }
 
@@ -193,26 +190,24 @@ public class TileSelector : MonoBehaviour
         for (int i = selectedTiles.Count - 1; i >= index; i--)
         {
             selectedTiles[i].Highlight(Color.white);
-            Debug.Log("Pole odznaczone: " + selectedTiles[i].name);
+            //Debug.Log("Pole odznaczone: " + selectedTiles[i].name);
             selectedTiles.RemoveAt(i);
         }
 
         UpdateTileHighlights();
     }
-
     private Tile GetTileUnderMouse()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
             Tile tile = hit.collider.GetComponent<Tile>();
-            Debug.Log("Pole pod myszk¹: " + (tile != null ? tile.name : "brak"));
+            //Debug.Log("Pole pod myszk¹: " + (tile != null ? tile.name : "brak"));
             return tile;
         }
-        Debug.Log("Brak kolizji pod myszk¹.");
+        //Debug.Log("Brak kolizji pod myszk¹.");
         return null;
     }
-
     public void OnReadyButtonClicked()
     {
         
@@ -228,7 +223,6 @@ public class TileSelector : MonoBehaviour
         isProcessingMoves = true;
         StartCoroutine(MoveCharacterAlongPath());
     }
-
     private void StartBattle(Enemy enemy)
     {
         Debug.Log("Rozpoczynanie walki z przeciwnikiem");
@@ -239,13 +233,13 @@ public class TileSelector : MonoBehaviour
         }
 
         GameManager.Instance.SetCurrentEnemy(enemy);
-
+        if (enemy != null && enemy.gameObject != null)
+        {
+            Destroy(enemy.gameObject);
+            Debug.Log($"Usuniêto model przeciwnika: {enemy.name}");
+        }
         SceneManager.LoadScene("Fight");
-        //if (enemy != null && enemy.gameObject != null)
-        //{
-        //    Destroy(enemy.gameObject);
-        //    Debug.Log($"Usuniêto model przeciwnika: {enemy.name}");
-        //}
+
     }
     private void RestorePlayerPosition()
     {
@@ -254,7 +248,34 @@ public class TileSelector : MonoBehaviour
             character.transform.position = PlayerInfo.Instance.PlayerPosition;
         }
     }
+    private void SetStartingTileFromPlayerPosition()
+    {
+        if (character == null)
+        {
+            Debug.LogWarning("Brak modelu gracza. Nie mo¿na ustawiæ startingTile.");
+            return;
+        }
 
+        if (tilemapGround == null)
+        {
+            Debug.LogWarning("Brak tilemapy. Nie mo¿na ustawiæ startingTile.");
+            return;
+        }
+        Vector3 playerPosition = character.transform.position;
+
+        int layerMask = LayerMask.GetMask("Tilemap_Ground");
+        Ray ray = new Ray(playerPosition + Vector3.up * 10f, Vector3.down);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
+        {
+            Tile tile = hit.collider.GetComponent<Tile>();
+            if (tile != null)
+            {
+                startingTile = tile;
+            }
+        }
+    }
 
     private System.Collections.IEnumerator MoveCharacterAlongPath()
     {
@@ -302,20 +323,22 @@ public class TileSelector : MonoBehaviour
                 RaycastHit hit;
                 if (Physics.Raycast(loweredPosition, Vector3.down, out hit, Mathf.Infinity))
                 {
-                    Debug.Log($"Raycast trafi³ w obiekt: {hit.collider.name}");
+                    //Debug.Log($"Raycast trafi³ w obiekt: {hit.collider.name}");
 
                     Enemy enemy = hit.collider.GetComponent<Enemy>();
                     
                     if (enemy != null)
                     {
-                        Debug.Log($"Przeciwnik {enemy.name} (zdrowie = {enemy.HealthPoints} diff={enemy.DifficultyLevel} znaleziony na kafelku {tile.name}.");
+                        //Debug.Log($"Przeciwnik {enemy.name} (zdrowie = {enemy.HealthPoints} diff={enemy.DifficultyLevel} znaleziony na kafelku {tile.name}.");
 
                         characterAnimator.SetBool("isWalking", false);
                         StopAllCoroutines();
-                        Debug.Log("Zatrzymano dalszy ruch postaci.");
+                        //Debug.Log("Zatrzymano dalszy ruch postaci.");
 
+                        TileUnderCharacter = tile.transform.position;
+                        //Debug.Log($"=================Pozycja przeciwnika {TileUnderCharacter}");
                         StartBattle(enemy);
-                        Debug.Log("Rozpoczêto walkê z przeciwnikiem.");
+                        //Debug.Log("Rozpoczêto walkê z przeciwnikiem.");
 
                         yield break;
                     }
@@ -323,7 +346,7 @@ public class TileSelector : MonoBehaviour
                     Chest chest = hit.collider.GetComponent<Chest>();
                     if (chest != null)
                     {
-                        Debug.Log($"Znaleziono skrzynkê na kafelku {tile.name}.");
+                        //Debug.Log($"Znaleziono skrzynkê na kafelku {tile.name}.");
                         chest.OpenChest();
                         PlayerManager.Instance.AddCoins(chest.coins);   
                         PlayerInfo.Instance.ChangeMaxHealth(1);
@@ -331,19 +354,19 @@ public class TileSelector : MonoBehaviour
                     }
                     else
                     {
-                        Debug.Log("Raycast trafi³ w obiekt, ale nie jest to przeciwnik.");
+                        //Debug.Log("Raycast trafi³ w obiekt, ale nie jest to przeciwnik.");
                     }
                 }
                 else
                 {
-                    Debug.Log($"Brak obiektu na kafelku {tile.name}. Przechodzê do kolejnego.");
+                    //Debug.Log($"Brak obiektu na kafelku {tile.name}. Przechodzê do kolejnego.");
                 }
 
             }
         }
         finally
         {
-            Debug.Log("Ruch zakoñczony. Czyszczenie zaznaczenia potencjalnych ruchów.");
+            //Debug.Log("Ruch zakoñczony. Czyszczenie zaznaczenia potencjalnych ruchów.");
 
             ClearPotentialMoveHighlights();
 
@@ -399,7 +422,7 @@ public class TileSelector : MonoBehaviour
 
             if (tile.IsAdjacent(referenceTile))
             {
-                Debug.Log("Sprawdzanie s¹siedniego pola: " + tile.name);
+                //Debug.Log("Sprawdzanie s¹siedniego pola: " + tile.name);
 
                 bool hasObstacle = tile.HasObstacle();
                 bool hasChest = tile.HasChest();
@@ -407,19 +430,19 @@ public class TileSelector : MonoBehaviour
 
                 if (hasObstacle)
                 {
-                    Debug.Log("Pole ma przeszkodê: " + tile.name);
+                    //Debug.Log("Pole ma przeszkodê: " + tile.name);
                     tile.Highlight(Color.red);
                     tile.IsAvailableForSelection = false;
                 }
                 else if(hasChest)
                 {
-                    Debug.Log("Pole ma skrzynke: " + tile.name);
+                    //Debug.Log("Pole ma skrzynke: " + tile.name);
                     tile.Highlight(new Color(1.2f, 1f, 0f));
                     tile.IsAvailableForSelection = true;
                 }
                 else if (!isInMaxRange)
                 {
-                    Debug.Log("Pole poza dozwolonym zasiêgiem: " + tile.name);
+                    //Debug.Log("Pole poza dozwolonym zasiêgiem: " + tile.name);
                     tile.Highlight(Color.red);
                     tile.IsAvailableForSelection = false;
                 }
@@ -427,7 +450,7 @@ public class TileSelector : MonoBehaviour
                 {
                     tile.Highlight(Color.green);
                     tile.IsAvailableForSelection = true;
-                    Debug.Log("Pole dostêpne do zaznaczenia: " + tile.name);
+                    //Debug.Log("Pole dostêpne do zaznaczenia: " + tile.name);
                 }
             }
         }

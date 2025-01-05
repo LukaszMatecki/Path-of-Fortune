@@ -92,7 +92,7 @@ public class SaveSystem : MonoBehaviour
         }
     }
 
-    private void OnSaveButtonClicked()
+    public void OnSaveButtonClicked()
     {
         Debug.Log("Save button clicked.");
         if (SaveSystem.Instance == null)
