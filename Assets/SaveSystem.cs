@@ -26,6 +26,8 @@ public class SaveData
     public float lightRotationY;
     public float lightRotationZ;
 
+    public int playerCoins;
+
 
     public Dictionary<string, object> gameData;
 }
@@ -44,6 +46,7 @@ public class SaveSystem : MonoBehaviour
     [SerializeField] private TextMeshProUGUI errorMessageText;
     [SerializeField] private TMP_InputField saveNameInputField;
     [SerializeField] private Button saveButton;
+    [SerializeField] private int playerCoins;
 
     private bool isSaving = false;
 
@@ -197,6 +200,7 @@ public class SaveSystem : MonoBehaviour
             playTime = TimeSpan.FromSeconds(Time.timeSinceLevelLoad).ToString(@"hh\:mm\:ss"),
             screenshotPath = screenshotPath,
             gameTimeInMinutes = gameTimeInMinutes,
+            playerCoins = PlayerManager.Instance.coins,
             playerPositionX = player.transform.position.x,
             playerPositionY = player.transform.position.y,
             playerPositionZ = player.transform.position.z,
@@ -311,6 +315,10 @@ public class SaveSystem : MonoBehaviour
         {
             Debug.LogWarning("Directional Light object is not assigned!");
         }
+
+        // £adowanie liczby monet
+        PlayerManager.Instance.coins = saveData.playerCoins;
+        Debug.Log($"Coins loaded: {PlayerManager.Instance.coins}");
     }
 
     public static class SaveDataManager

@@ -5,6 +5,7 @@ using TMPro;
 
 public class GameLoader : MonoBehaviour
 {
+    [SerializeField] private TMP_Text coinsText;
     [SerializeField] private TMP_Text timeText;
     [SerializeField] private GameObject player; // Referencja do obiektu gracza
     [SerializeField] private Light directionalLight; // Referencja do œwiat³a
@@ -90,6 +91,17 @@ public class GameLoader : MonoBehaviour
                 Debug.LogWarning("Nie przypisano obiektu tekstu do wyœwietlania czasu gry!");
             }
 
+            // Wczytanie i aktualizacja monet
+            if (coinsText != null)
+            {
+                int loadedCoins = saveData.playerCoins; // Zak³adam, ¿e `playerCoins` istnieje w SaveData
+                coinsText.text = loadedCoins.ToString();
+                Debug.Log($"Monety za³adowane: {loadedCoins}");
+            }
+            else
+            {
+                Debug.LogWarning("Nie przypisano obiektu tekstu do wyœwietlania monet!");
+            }
 
         }
         else

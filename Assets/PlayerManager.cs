@@ -9,7 +9,7 @@ public class PlayerManager : MonoBehaviour
     public static PlayerManager Instance; // Singleton
     public TMP_Text coinsText; // Pole do wyœwietlania liczby monet
     public TMP_Text coinsinfo; // Pole do wyœwietlania informacji o zdobytych monetach
-    private int coins; // Liczba monet gracza
+    public int coins; // Liczba monet gracza
     private Coroutine infoCoroutine; // Przechowuje referencjê do aktywnej korutyny
 
     void Awake()
@@ -39,7 +39,7 @@ public class PlayerManager : MonoBehaviour
     {
         if (coinsText != null)
         {
-            coinsText.text = "Coins: " + coins;
+            coinsText.text = "" + coins;
         }
     }
 
