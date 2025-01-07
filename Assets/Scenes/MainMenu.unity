@@ -6966,7 +6966,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -7616,6 +7616,7 @@ MonoBehaviour:
     lightRotationX: 0
     lightRotationY: 0
     lightRotationZ: 0
+    playerCoins: 0
   playerPosition: {x: 0, y: 0, z: 0}
 --- !u!4 &1811598076
 Transform:
@@ -11113,11 +11114,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2307172336501715689, guid: 4fcd0d27448063e40939c7929dc66f8e, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2307172336501715689, guid: 4fcd0d27448063e40939c7929dc66f8e, type: 3}
       propertyPath: m_AnchorMax.y
+      value: 0.84
+      objectReference: {fileID: 0}
+    - target: {fileID: 2656626106668121375, guid: 4fcd0d27448063e40939c7929dc66f8e, type: 3}
+      propertyPath: m_AnchorMax.x
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2656626106668121375, guid: 4fcd0d27448063e40939c7929dc66f8e, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2656626106668121375, guid: 4fcd0d27448063e40939c7929dc66f8e, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -17
+      objectReference: {fileID: 0}
+    - target: {fileID: 2656626106668121375, guid: 4fcd0d27448063e40939c7929dc66f8e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3777163901304267275, guid: 4fcd0d27448063e40939c7929dc66f8e, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.size
@@ -11139,6 +11156,22 @@ PrefabInstance:
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: UnityEngine.MonoBehaviour, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 5526255035209514731, guid: 4fcd0d27448063e40939c7929dc66f8e, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5526255035209514731, guid: 4fcd0d27448063e40939c7929dc66f8e, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5526255035209514731, guid: 4fcd0d27448063e40939c7929dc66f8e, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -17
+      objectReference: {fileID: 0}
+    - target: {fileID: 5526255035209514731, guid: 4fcd0d27448063e40939c7929dc66f8e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6802563415626069198, guid: 4fcd0d27448063e40939c7929dc66f8e, type: 3}
       propertyPath: m_Name
       value: GraphicsWindow
@@ -11153,11 +11186,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8967577142256455297, guid: 4fcd0d27448063e40939c7929dc66f8e, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8967577142256455297, guid: 4fcd0d27448063e40939c7929dc66f8e, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0.84
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
