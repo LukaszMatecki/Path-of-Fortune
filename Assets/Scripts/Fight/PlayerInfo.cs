@@ -1,3 +1,4 @@
+using GG;
 using UnityEngine;
 
 public class PlayerInfo : MonoBehaviour
@@ -5,6 +6,9 @@ public class PlayerInfo : MonoBehaviour
     public static PlayerInfo Instance { get; private set; }
 
     public Vector3 PlayerPosition { get; set; } = Vector3.zero;
+
+    public bool isEnemyDead = false;
+    public Vector3 enemyToDeletePosition;
 
     public int maxHealth = 5;
 

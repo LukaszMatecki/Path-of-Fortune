@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using GG;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 using static GG.BattleManager;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class TileSelector : MonoBehaviour
 {
@@ -31,9 +33,15 @@ public class TileSelector : MonoBehaviour
 
     public Dice dice;
 
+    
 
     void Start()
     {
+        if(PlayerInfo.Instance.isEnemyDead == true)
+        {
+            DeleteEnemy();
+        }
+        PlayerInfo.Instance.isEnemyDead = false;
         RestorePlayerPosition();
         SetStartingTileFromPlayerPosition();
     }
@@ -223,6 +231,31 @@ public class TileSelector : MonoBehaviour
         isProcessingMoves = true;
         StartCoroutine(MoveCharacterAlongPath());
     }
+    private void DeleteEnemy()
+    {
+
+
+        if (tilemapGround == null)
+        {
+            Debug.LogWarning("Brak tilemapy. Nie mo¿na ustawiæ startingTile.");
+            return;
+        }
+        Vector3 enemyPosition = PlayerInfo.Instance.enemyToDeletePosition;
+
+
+        int layerMask = LayerMask.GetMask("Tilemap_OverGround");
+        Ray ray = new Ray(enemyPosition + Vector3.up * 10f, Vector3.down);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
+        {
+            Enemy enemyToDelete = hit.collider.GetComponent<Enemy>();
+            if (enemyToDelete != null)
+            {
+                Destroy(enemyToDelete.gameObject);
+            }
+        }
+    }
     private void StartBattle(Enemy enemy)
     {
         Debug.Log("Rozpoczynanie walki z przeciwnikiem");
@@ -233,11 +266,7 @@ public class TileSelector : MonoBehaviour
         }
 
         GameManager.Instance.SetCurrentEnemy(enemy);
-        if (enemy != null && enemy.gameObject != null)
-        {
-            Destroy(enemy.gameObject);
-            Debug.Log($"Usuniêto model przeciwnika: {enemy.name}");
-        }
+
         SceneManager.LoadScene("Fight");
 
     }
@@ -337,6 +366,7 @@ public class TileSelector : MonoBehaviour
 
                         TileUnderCharacter = tile.transform.position;
                         //Debug.Log($"=================Pozycja przeciwnika {TileUnderCharacter}");
+                        PlayerInfo.Instance.enemyToDeletePosition = enemy.transform.position;
                         StartBattle(enemy);
                         //Debug.Log("Rozpoczêto walkê z przeciwnikiem.");
 

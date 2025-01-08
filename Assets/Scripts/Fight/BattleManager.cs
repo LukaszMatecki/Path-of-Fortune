@@ -206,7 +206,6 @@ namespace GG
                 var cardViz = activeEnemyCardObject.GetComponent<CardViz>();
                 cardViz.LoadCard(enemyCard);
 
-                // Ustawiamy tura na true po zagraniu karty przez przeciwnika
                 isTurnInProgress = true;
             }
         }
@@ -351,6 +350,7 @@ namespace GG
             if (enemyData.HealthPoints <= 0)
             {
                 Debug.Log("Przeciwnik zosta³ pokonany!");
+                PlayerInfo.Instance.isEnemyDead = true;
                 SceneManager.LoadScene("SampleScene");
             }
         }
