@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - Chest
   - FxTemporaire
+  - Shop
   layers:
   - Default
   - TransparentFX

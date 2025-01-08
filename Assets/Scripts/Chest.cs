@@ -5,27 +5,46 @@ public class Chest : MonoBehaviour
     public int coins; // Liczba monet w skrzyni
     private Animator animator; // Animator dla skrzyni
     private bool isOpened = false;
+    public GameObject marker; // Znacznik nad skrzynk¹
 
     void Start()
     {
+        // Losowanie liczby monet w przedziale od 1 do 50
+        coins = Random.Range(1, 51); // Random.Range(1, 51) generuje liczbê ca³kowit¹ od 1 do 50
+
         // Pobieramy Animator z komponentu obiektu skrzyni
         animator = GetComponent<Animator>();
+
+        // SprawdŸ, czy znacznik jest przypisany
+        if (marker == null)
+        {
+            Debug.LogWarning("Znacznik nie zosta³ przypisany do skrzyni!");
+        }
     }
 
     // Metoda otwierania skrzyni
     public void OpenChest()
     {
-        // Sprawdzenie, czy animator jest przypisany
-        if (animator != null)
+        if (!isOpened)
         {
-            // Uruchamiamy animacjê otwierania skrzyni (zak³adaj¹c, ¿e masz animacjê o nazwie "Open")
-            animator.SetTrigger("Open");
-            isOpened = true;
-        }
-        // Dodajemy monety do gracza
-        Debug.Log($"Znaleziono {coins} monet w skrzyni.");
+            // Uruchamiamy animacjê otwierania skrzyni
+            if (animator != null)
+            {
+                animator.SetTrigger("Open");
+            }
 
-        // Mo¿esz tu dodaæ inne akcje, jak np. przekazanie monet graczowi
+            // Ustawiamy flagê, ¿e skrzynka zosta³a otwarta
+            isOpened = true;
+
+            // Ukrywamy znacznik
+            if (marker != null)
+            {
+                marker.SetActive(false); // Dezaktywacja znacznika
+            }
+
+            // Dodajemy monety do gracza (lub inna akcja)
+            Debug.Log($"Znaleziono {coins} monet w skrzyni.");
+        }
     }
 
     public void CloseChest()
@@ -33,15 +52,13 @@ public class Chest : MonoBehaviour
         // Uruchomienie animacji zamykania skrzyni
         if (animator != null)
         {
-            animator.SetTrigger("Close"); // Uruchomienie animacji zamykania
+            animator.SetTrigger("Close");
         }
 
-        // Zablokowanie interakcji z skrzynk¹
-
-        if (isOpened == true)
+        // Opcjonalne: blokowanie dalszej interakcji
+        if (isOpened)
         {
-            // Mo¿na równie¿ wy³¹czyæ mo¿liwoœæ dalszej interakcji z ni¹
-            this.GetComponent<Collider>().enabled = false; // Wy³¹czenie detekcji kolizji
+            this.GetComponent<Collider>().enabled = false; // Wy³¹czenie kolizji
         }
     }
 }

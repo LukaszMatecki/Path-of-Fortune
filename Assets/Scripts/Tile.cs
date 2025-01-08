@@ -116,7 +116,7 @@ public class Tile : MonoBehaviour
 
         if (chestFound)
         {
-           //Debug.Log("Na polu: " + tilePosition + " znajduje siê skrzynka.");
+            //Debug.Log("Na polu: " + tilePosition + " znajduje siê skrzynka.");
             return true;
         }
 
@@ -124,32 +124,32 @@ public class Tile : MonoBehaviour
         return false;
     }
 
-    public void InteractWithChest()
+    public bool HasShop()
     {
-        if (HasChest())
+        Vector3 tilePosition = transform.position;
+        Tilemap overGroundTilemap = GameObject.Find("Tilemap_OverGround").GetComponent<Tilemap>();
+
+        Vector3 worldPosition = overGroundTilemap.WorldToCell(tilePosition);
+        Collider[] colliders = Physics.OverlapBox(tilePosition, new Vector3(0.5f, 0.5f, 0.5f));
+
+        bool chestFound = false;
+        foreach (var collider in colliders)
         {
-            // Otwórz skrzynkê
-            //Debug.Log("Skrzynka otwarta!");
-
-            // Dodaj 10 monet
-            PlayerManager.Instance.AddCoins(10);
-
-            // Dezaktywuj skrzynkê
-            Collider[] colliders = Physics.OverlapBox(transform.position, new Vector3(0.5f, 0.5f, 0.5f));
-            foreach (var collider in colliders)
+            if (collider != null && collider.CompareTag("Shop"))
             {
-                if (collider.CompareTag("Chest"))
-                {
-                    collider.gameObject.SetActive(false);
-                }
+                chestFound = true;
+                Debug.Log("Sklep wykryty na polu: " + tilePosition + ", Obiekt: " + collider.gameObject.name);
             }
         }
-    }
 
+        if (chestFound)
+        {
+            Debug.Log("Na polu: " + tilePosition + " znajduje siê sklep.");
+            return true;
+        }
 
-    public bool HasEvent()
-    {
-        // Tutaj mo¿na sprawdziæ, czy pole ma jakieœ zdarzenie (np. walka)
+        Debug.Log("Brak sklepu na polu: " + tilePosition);
         return false;
     }
+
 }

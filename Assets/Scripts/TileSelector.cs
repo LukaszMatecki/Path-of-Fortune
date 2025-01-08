@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 using GG;
@@ -23,7 +24,6 @@ public class TileSelector : MonoBehaviour
     private bool isProcessingMoves = false;
 
     public TMP_Text feedbackPanelText; // Panel tekstowy przypisany w Inspektorze
-    public int maxClicksBeforeFeedback = 5; // Maksymalna liczba klikniêæ przed pokazaniem komunikatu
     public float clickResetTime = 3f; // Czas w sekundach do zresetowania licznika klikniêæ
 
     private int leftClickCount = 0; // Licznik klikniêæ lewego przycisku myszy
@@ -37,14 +37,32 @@ public class TileSelector : MonoBehaviour
 
     void Start()
     {
-        if(PlayerInfo.Instance.isEnemyDead == true)
+        StartCoroutine(HandleEnemyDead());
+    }
+
+
+    private IEnumerator HandleEnemyDead()
+    {
+        if (PlayerInfo.Instance.isEnemyDead == true)
         {
+            // Wywo³anie metody EnemyDead()
+            Enemy.Instance.EnemyDead();
+            RestorePlayerPosition();
+            SetStartingTileFromPlayerPosition();
+            // Czekanie przez 1 sekundê
+            yield return new WaitForSeconds(2f);
+
+            // Po opóŸnieniu wywo³aj DeleteEnemy
             DeleteEnemy();
         }
-        PlayerInfo.Instance.isEnemyDead = false;
-        RestorePlayerPosition();
-        SetStartingTileFromPlayerPosition();
+        else
+        { 
+            PlayerInfo.Instance.isEnemyDead = false;
+            RestorePlayerPosition();
+            SetStartingTileFromPlayerPosition();
+        }
     }
+
     void Update()
     {
         if (!isActive) return;
@@ -63,12 +81,12 @@ public class TileSelector : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0))
             {
-                Debug.Log("LPM klikniêty - próba zaznaczenia pola.");
+                //Debug.Log("LPM klikniêty - próba zaznaczenia pola.");
                 TrySelectTile();
             }
             else if (Input.GetMouseButtonDown(1))
             {
-                Debug.Log("PPM klikniêty - próba odznaczenia pola.");
+                //Debug.Log("PPM klikniêty - próba odznaczenia pola.");
                 TryDeselectTile();
             }
         }
@@ -76,13 +94,13 @@ public class TileSelector : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0))
             {
-                Debug.Log("LPM klikniêty - próba zaznaczenia pola.");
+                //Debug.Log("LPM klikniêty - próba zaznaczenia pola.");
                 TrySelectTile();
                 TrackLeftClick();
             }
             else if (Input.GetMouseButtonDown(1))
             {
-                Debug.Log("PPM klikniêty - próba odznaczenia pola.");
+                //Debug.Log("PPM klikniêty - próba odznaczenia pola.");
                 TryDeselectTile();
             }
         }
@@ -101,7 +119,7 @@ public class TileSelector : MonoBehaviour
         lastClickTime = Time.time;
 
 
-        if (leftClickCount >= maxClicksBeforeFeedback)
+        if (leftClickCount > 20)
         {
             ShowFeedbackMessage("You need to roll the dice first!");
             leftClickCount = 0;
@@ -231,30 +249,29 @@ public class TileSelector : MonoBehaviour
         isProcessingMoves = true;
         StartCoroutine(MoveCharacterAlongPath());
     }
-    private void DeleteEnemy()
+    public void DeleteEnemy()
     {
 
-
-        if (tilemapGround == null)
-        {
-            Debug.LogWarning("Brak tilemapy. Nie mo¿na ustawiæ startingTile.");
-            return;
-        }
-        Vector3 enemyPosition = PlayerInfo.Instance.enemyToDeletePosition;
-
-
-        int layerMask = LayerMask.GetMask("Tilemap_OverGround");
-        Ray ray = new Ray(enemyPosition + Vector3.up * 10f, Vector3.down);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
-        {
-            Enemy enemyToDelete = hit.collider.GetComponent<Enemy>();
-            if (enemyToDelete != null)
+            if (tilemapGround == null)
             {
-                Destroy(enemyToDelete.gameObject);
+                Debug.LogWarning("Brak tilemapy. Nie mo¿na ustawiæ startingTile.");
+                return;
             }
-        }
+            Vector3 enemyPosition = PlayerInfo.Instance.enemyToDeletePosition;
+
+
+            int layerMask = LayerMask.GetMask("Tilemap_OverGround");
+            Ray ray = new Ray(enemyPosition + Vector3.up * 10f, Vector3.down);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
+            {
+                Enemy enemyToDelete = hit.collider.GetComponent<Enemy>();
+                if (enemyToDelete != null)
+                {
+                    Destroy(enemyToDelete.gameObject);
+                }
+            }
     }
     private void StartBattle(Enemy enemy)
     {
@@ -456,23 +473,26 @@ public class TileSelector : MonoBehaviour
 
                 bool hasObstacle = tile.HasObstacle();
                 bool hasChest = tile.HasChest();
+                bool hasShop = tile.HasShop();
                 bool isInMaxRange = selectedTiles.Count < maxSteps;
 
                 if (hasObstacle)
                 {
-                    //Debug.Log("Pole ma przeszkodê: " + tile.name);
                     tile.Highlight(Color.red);
                     tile.IsAvailableForSelection = false;
                 }
                 else if(hasChest)
                 {
-                    //Debug.Log("Pole ma skrzynke: " + tile.name);
                     tile.Highlight(new Color(1.2f, 1f, 0f));
                     tile.IsAvailableForSelection = true;
                 }
+                else if (hasShop)
+                {
+                     tile.Highlight(new Color(0f, 0f, 1f));
+                     tile.IsAvailableForSelection = true;
+                }
                 else if (!isInMaxRange)
                 {
-                    //Debug.Log("Pole poza dozwolonym zasiêgiem: " + tile.name);
                     tile.Highlight(Color.red);
                     tile.IsAvailableForSelection = false;
                 }
@@ -480,7 +500,6 @@ public class TileSelector : MonoBehaviour
                 {
                     tile.Highlight(Color.green);
                     tile.IsAvailableForSelection = true;
-                    //Debug.Log("Pole dostêpne do zaznaczenia: " + tile.name);
                 }
             }
         }

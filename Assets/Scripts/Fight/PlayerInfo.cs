@@ -1,8 +1,11 @@
 using GG;
 using UnityEngine;
+using UnityEngine.Timeline;
 
 public class PlayerInfo : MonoBehaviour
 {
+    [SerializeField] private GameObject enemyMarker;
+    [SerializeField] private Animator enemyAnimator; 
     public static PlayerInfo Instance { get; private set; }
 
     public Vector3 PlayerPosition { get; set; } = Vector3.zero;
@@ -25,7 +28,6 @@ public class PlayerInfo : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
     }
-
 
     public void ChangeMaxHealth(int amountToIncrease)
     {
