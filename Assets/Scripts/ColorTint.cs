@@ -1,44 +1,32 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
-public class PanelHoverAlpha : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class MultiGraphicButton : MonoBehaviour
 {
-    [SerializeField] private Image panelImage; // Komponent Image panelu, który przypisujesz w Inspectorze
-    private Color originalColor;
-    private Color hoverColor;
+    public Button button;
+    public Text text;
+    public Image image;
 
     private void Start()
     {
-        if (panelImage != null)
+        if (button != null)
         {
-            originalColor = new Color(0, 0, 0, 200f / 255f); // Alpha 200
-            hoverColor = new Color(0, 0, 0, 245f / 255f); // Alpha 245
+            var buttonColors = button.colors;
 
-            panelImage.color = originalColor;
-            Debug.Log($"[PanelHoverAlpha] Pierwotny kolor ustawiony na: {originalColor}");
-        }
-        else
-        {
-            Debug.LogError("[PanelHoverAlpha] Nie przypisano komponentu Image!");
-        }
-    }
+            if (text != null)
+                text.color = buttonColors.normalColor;
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        if (panelImage != null)
-        {
-            panelImage.color = hoverColor;
-            Debug.Log("[PanelHoverAlpha] Kursor najecha³ - Zmieniono kolor na: " + hoverColor);
-        }
-    }
+            if (image != null)
+                image.color = buttonColors.normalColor;
 
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        if (panelImage != null)
-        {
-            panelImage.color = originalColor;
-            Debug.Log("[PanelHoverAlpha] Kursor opuœci³ - Przywrócono kolor na: " + originalColor);
+            button.onClick.AddListener(() =>
+            {
+                if (text != null)
+                    text.color = buttonColors.pressedColor;
+
+                if (image != null)
+                    image.color = buttonColors.pressedColor;
+            });
         }
     }
 }

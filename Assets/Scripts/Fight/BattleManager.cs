@@ -1,47 +1,50 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 namespace GG
 {
     public class BattleManager : MonoBehaviour
     {
-        [Header("UI References")]
-        public Transform HandContainer;
-        public Transform PlayerCardContainer;
-        public Transform EnemyCardContainer;
+        private GameObject activeEnemyCardObject;
+        private GameObject activePlayerCardObject;
         public GameObject CardPrefab;
+        private List<Card> currentDeck = new();
+
+        private Card currentEnemyCard;
+        private int currentPlayerHealth;
+        [SerializeField] private GameObject EndTurnButton;
+        public Transform EnemyCardContainer;
+        private List<Card> enemyCurrentDeck = new();
+
+        private EnemyBattleData enemyData;
+        [SerializeField] private TMP_Text EnemyHealthText;
 
         [SerializeField] private TMP_Text EnemyNameText;
-        [SerializeField] private TMP_Text EnemyHealthText;
-        [SerializeField] private TMP_Text PlayerNameText;
-        [SerializeField] private TMP_Text PlayerHealthText;
-        [SerializeField] private GameObject EndTurnButton;
 
-        private List<Card> playerHand = new List<Card>();
-        private List<Card> originalDeck = new List<Card>();
-        private List<Card> currentDeck = new List<Card>();
+        private List<Card> enemyOriginalDeck = new();
 
-        private List<Card> enemyOriginalDeck = new List<Card>();
-        private List<Card> enemyCurrentDeck = new List<Card>();
+        [Header("UI References")] public Transform HandContainer;
 
         public int HandSize = 3;
 
-        public bool useManualTurnEnding = true; // Flaga do sterowania trybem koñczenia tury
+        private bool isEndTurnButtonClicked; // Flaga, która zapobiega wielokrotnemu klikniêciu przycisku
+        public bool isTurnInProgress = true; // Flaga do œledzenia, czy tura trwa
+        private List<Card> originalDeck = new();
+        public Transform PlayerCardContainer;
+
+        private readonly List<Card> playerHand = new();
+        [SerializeField] private TMP_Text PlayerHealthText;
 
         private PlayerInfo playerInfo;
-        private int currentPlayerHealth;
+        [SerializeField] private TMP_Text PlayerNameText;
 
-        private EnemyBattleData enemyData;
-
-        private GameObject activeEnemyCardObject;
-        private GameObject activePlayerCardObject;
-
-        private Card currentEnemyCard;
-
-        private bool isEndTurnButtonClicked = false; // Flaga, która zapobiega wielokrotnemu klikniêciu przycisku
-        public bool isTurnInProgress = true; // Flaga do œledzenia, czy tura trwa
+        public bool useManualTurnEnding = true; // Flaga do sterowania trybem koñczenia tury
 
         private void Start()
         {
@@ -51,7 +54,7 @@ namespace GG
                 SetEnemyData(enemyData);
                 Debug.Log("Dane przeciwnika ustawione.");
 
-                Deck enemyDeck = GetEnemyDeckByDifficulty(enemyData.DifficultyLevel);
+                var enemyDeck = GetEnemyDeckByDifficulty(enemyData.DifficultyLevel);
                 if (enemyDeck != null)
                 {
                     enemyOriginalDeck = new List<Card>(enemyDeck.GetCards());
@@ -88,7 +91,7 @@ namespace GG
             if (EndTurnButton != null)
             {
                 EndTurnButton.SetActive(useManualTurnEnding);
-                EndTurnButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(OnEndTurnButtonClicked);
+                EndTurnButton.GetComponent<Button>().onClick.AddListener(OnEndTurnButtonClicked);
             }
         }
 
@@ -105,33 +108,27 @@ namespace GG
                 1 => GameManager.Instance.Deck_diff_1,
                 2 => GameManager.Instance.Deck_diff_2,
                 3 => GameManager.Instance.Deck_diff_3,
-                _ => throw new System.ArgumentOutOfRangeException("Nieznany poziom trudnoœci: " + difficultyLevel),
+                _ => throw new ArgumentOutOfRangeException("Nieznany poziom trudnoœci: " + difficultyLevel)
             };
         }
 
         private void DrawStartingHand(int numCards)
         {
-            for (int i = 0; i < numCards; i++)
-            {
-                DrawCard();
-            }
+            for (var i = 0; i < numCards; i++) DrawCard();
         }
 
         private void DrawCard()
         {
-            if (currentDeck.Count == 0)
-            {
-                ReshuffleDeck();
-            }
+            if (currentDeck.Count == 0) ReshuffleDeck();
 
             if (currentDeck.Count > 0)
             {
-                int randomIndex = Random.Range(0, currentDeck.Count);
-                Card card = currentDeck[randomIndex];
+                var randomIndex = Random.Range(0, currentDeck.Count);
+                var card = currentDeck[randomIndex];
                 currentDeck.RemoveAt(randomIndex);
                 playerHand.Add(card);
 
-                GameObject cardObject = Instantiate(CardPrefab, HandContainer);
+                var cardObject = Instantiate(CardPrefab, HandContainer);
                 var cardViz = cardObject.GetComponent<CardViz>();
                 cardViz.LoadCard(card);
 
@@ -167,13 +164,10 @@ namespace GG
 
         public void OnPlayerCardClicked(GameObject cardObject)
         {
-            if (!isTurnInProgress || !cardObject.transform.IsChildOf(PlayerCardContainer))
-            {
-                return;
-            }
+            if (!isTurnInProgress || !cardObject.transform.IsChildOf(PlayerCardContainer)) return;
 
-            CardViz cardViz = cardObject.GetComponent<CardViz>();
-            Card card = cardViz.GetCard();
+            var cardViz = cardObject.GetComponent<CardViz>();
+            var card = cardViz.GetCard();
 
             if (card != null)
             {
@@ -188,15 +182,12 @@ namespace GG
 
         public void EnemyPlayCard()
         {
-            if (enemyCurrentDeck.Count == 0)
-            {
-                ReshuffleEnemyDeck();
-            }
+            if (enemyCurrentDeck.Count == 0) ReshuffleEnemyDeck();
 
             if (enemyCurrentDeck.Count > 0)
             {
-                int randomIndex = Random.Range(0, enemyCurrentDeck.Count);
-                Card enemyCard = enemyCurrentDeck[randomIndex];
+                var randomIndex = Random.Range(0, enemyCurrentDeck.Count);
+                var enemyCard = enemyCurrentDeck[randomIndex];
                 currentEnemyCard = enemyCard;
                 enemyCurrentDeck.RemoveAt(randomIndex);
 
@@ -210,7 +201,7 @@ namespace GG
             }
         }
 
-        private System.Collections.IEnumerator RemoveCardsAfterDelay(float delay)
+        private IEnumerator RemoveCardsAfterDelay(float delay)
         {
             yield return new WaitForSeconds(delay);
 
@@ -231,16 +222,12 @@ namespace GG
 
         private void EndTurn()
         {
-
             isEndTurnButtonClicked = false;
             isTurnInProgress = false;
 
             EnemyPlayCard();
 
-            while (playerHand.Count < HandSize)
-            {
-                DrawCard();
-            }
+            while (playerHand.Count < HandSize) DrawCard();
         }
 
         public void OnEndTurnButtonClicked()
@@ -252,9 +239,9 @@ namespace GG
 
             if (PlayerCardContainer.childCount > 0)
             {
-                GameObject playerCardObject = PlayerCardContainer.GetChild(0).gameObject;
+                var playerCardObject = PlayerCardContainer.GetChild(0).gameObject;
 
-                Card currentPlayerCard = playerCardObject.GetComponent<CardViz>().GetCard();
+                var currentPlayerCard = playerCardObject.GetComponent<CardViz>().GetCard();
 
                 if (currentPlayerCard != null)
                 {
@@ -268,12 +255,15 @@ namespace GG
                 }
                 else
                 {
-                    Debug.LogError("Nie uda³o siê znaleŸæ obiektu Card w PlayerCardContainer.");
+                    Debug.LogWarning("Nie uda³o siê znaleŸæ obiektu Card w PlayerCardContainer.");
+                    // Jeœli karta nie zosta³a wybrana, nie koñczymy tury
+                    isEndTurnButtonClicked = false;
                 }
             }
             else
             {
-                Debug.LogError("Brak karty w PlayerCardContainer.");
+                Debug.LogWarning("Brak karty w PlayerCardContainer.");
+                isEndTurnButtonClicked = false;
             }
         }
 
@@ -281,10 +271,7 @@ namespace GG
         {
             currentDeck = new List<Card>(originalDeck);
 
-            foreach (var card in playerHand)
-            {
-                currentDeck.Remove(card);
-            }
+            foreach (var card in playerHand) currentDeck.Remove(card);
 
             Debug.Log("Talia gracza zosta³a przetasowana.");
         }
@@ -297,15 +284,15 @@ namespace GG
 
         private void ApplyCardEffects(Card playerCard, Card enemyCard)
         {
-            int playerHealing = playerCard != null ? playerCard.Healing : 0;
-            int playerDamage = playerCard != null ? playerCard.Damage : 0;
-            int playerShield = playerCard != null ? playerCard.Shield : 0;
-            bool playerIgnoresBlock = playerCard != null && playerCard.IgnoreBlock;
+            var playerHealing = playerCard != null ? playerCard.Healing : 0;
+            var playerDamage = playerCard != null ? playerCard.Damage : 0;
+            var playerShield = playerCard != null ? playerCard.Shield : 0;
+            var playerIgnoresBlock = playerCard != null && playerCard.IgnoreBlock;
 
-            int enemyHealing = enemyCard != null ? enemyCard.Healing : 0;
-            int enemyDamage = enemyCard != null ? enemyCard.Damage : 0;
-            int enemyShield = enemyCard != null ? enemyCard.Shield : 0;
-            bool enemyIgnoresBlock = enemyCard != null && enemyCard.IgnoreBlock;
+            var enemyHealing = enemyCard != null ? enemyCard.Healing : 0;
+            var enemyDamage = enemyCard != null ? enemyCard.Damage : 0;
+            var enemyShield = enemyCard != null ? enemyCard.Shield : 0;
+            var enemyIgnoresBlock = enemyCard != null && enemyCard.IgnoreBlock;
 
             currentPlayerHealth += playerHealing;
             currentPlayerHealth = Mathf.Min(currentPlayerHealth, playerInfo.maxHealth); // Limit do maksymalnego zdrowia
@@ -315,8 +302,8 @@ namespace GG
             enemyData.HealthPoints += enemyHealing;
             Debug.Log($"Przeciwnik uleczy³ siê o {enemyHealing}. Aktualne zdrowie: {enemyData.HealthPoints}");
 
-            int playerEffectiveShield = playerShield;
-            int enemyEffectiveShield = enemyShield;
+            var playerEffectiveShield = playerShield;
+            var enemyEffectiveShield = enemyShield;
 
             if (playerIgnoresBlock)
             {
@@ -330,14 +317,15 @@ namespace GG
                 Debug.Log("Przeciwnik zignorowa³ tarczê gracza.");
             }
 
-            int playerDamageTaken = Mathf.Max(enemyDamage - playerEffectiveShield, 0);
-            int enemyDamageTaken = Mathf.Max(playerDamage - enemyEffectiveShield, 0);
+            var playerDamageTaken = Mathf.Max(enemyDamage - playerEffectiveShield, 0);
+            var enemyDamageTaken = Mathf.Max(playerDamage - enemyEffectiveShield, 0);
 
             currentPlayerHealth -= playerDamageTaken;
             enemyData.HealthPoints -= enemyDamageTaken;
 
             Debug.Log($"Gracz otrzyma³ {playerDamageTaken} obra¿eñ. Aktualne zdrowie gracza: {currentPlayerHealth}");
-            Debug.Log($"Przeciwnik otrzyma³ {enemyDamageTaken} obra¿eñ. Aktualne zdrowie przeciwnika: {enemyData.HealthPoints}");
+            Debug.Log(
+                $"Przeciwnik otrzyma³ {enemyDamageTaken} obra¿eñ. Aktualne zdrowie przeciwnika: {enemyData.HealthPoints}");
 
             UpdatePlayerHealthText();
             UpdateEnemyHealthText();
@@ -350,7 +338,7 @@ namespace GG
             if (enemyData.HealthPoints <= 0)
             {
                 Debug.Log("Przeciwnik zosta³ pokonany!");
-                PlayerInfo.Instance.isEnemyDead = true;
+
                 SceneManager.LoadScene("SampleScene");
             }
         }
