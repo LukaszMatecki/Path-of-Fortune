@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Card4
   m_EditorClassIdentifier: 
   CardTitleText: card4
-  CardImage: {fileID: 21300000, guid: 3d42b5ef33689af43a3e6dccb8b02805, type: 3}
+  CardImage: {fileID: -1872677635, guid: 847f3e08157367e458aec63415b2d664, type: 3}
   CardEffectImagePrimary:
   - {fileID: 21300000, guid: 5eb49f4398121f44e850f5563c21f2a9, type: 3}
   - {fileID: 21300000, guid: 5eb49f4398121f44e850f5563c21f2a9, type: 3}

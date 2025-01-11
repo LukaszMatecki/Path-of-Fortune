@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-
 public class PauseMenuScript : MonoBehaviour
 {
     bool gamePaused = false;
@@ -13,20 +12,7 @@ public class PauseMenuScript : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && gamePaused == false)
-        {
-            Time.timeScale = 0;
-            gamePaused = true;
-            pauseMenu.SetActive(true);
-            hud.SetActive(false);
-        }
-        else if ((Input.GetKeyDown(KeyCode.Escape) && gamePaused == true))
-        {
-            Time.timeScale = 1;
-            gamePaused = false;
-            pauseMenu.SetActive(false);
-            hud.SetActive(true);
-        }
+        // Wy³¹czona obs³uga klawisza Escape
     }
 
     public void Pause()
@@ -62,7 +48,11 @@ public class PauseMenuScript : MonoBehaviour
         gamePaused = false;
         pauseMenu.SetActive(false);
         hud.SetActive(true);
-        tileSelector.isActive = true;
+
+        if (tileSelector != null)
+        {
+            tileSelector.isActive = true;
+        }
     }
 
     public void ContinueFight()

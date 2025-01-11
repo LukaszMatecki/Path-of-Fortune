@@ -90,7 +90,7 @@ public class Dice : MonoBehaviour
     private void OnMoveButtonClicked()
     {
         tileSelector.OnReadyButtonClicked();
-        Debug.Log("Move button clicked. Executing movement.");
+        //Debug.Log("Move button clicked. Executing movement.");
         DisableTileSelector();
     }
 
@@ -99,7 +99,7 @@ public class Dice : MonoBehaviour
         if (tileSelector != null)
         {
             tileSelector.isActive = false;
-            Debug.Log("TileSelector disabled after move.");
+            //Debug.Log("TileSelector disabled after move.");
         }
     }
 
@@ -110,7 +110,7 @@ public class Dice : MonoBehaviour
         if (tileSelector != null)
         {
             tileSelector.isActive = true;
-            Debug.Log("TileSelector re-enabled after move.");
+            //Debug.Log("TileSelector re-enabled after move.");
         }
     }
 }

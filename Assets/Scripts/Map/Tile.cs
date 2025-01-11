@@ -132,19 +132,19 @@ public class Tile : MonoBehaviour
         Vector3 worldPosition = overGroundTilemap.WorldToCell(tilePosition);
         Collider[] colliders = Physics.OverlapBox(tilePosition, new Vector3(0.5f, 0.5f, 0.5f));
 
-        bool chestFound = false;
+        bool shopFound = false;
         foreach (var collider in colliders)
         {
             if (collider != null && collider.CompareTag("Shop"))
             {
-                chestFound = true;
-                Debug.Log("Sklep wykryty na polu: " + tilePosition + ", Obiekt: " + collider.gameObject.name);
+                shopFound = true;
+                //Debug.Log("Sklep wykryty na polu: " + tilePosition + ", Obiekt: " + collider.gameObject.name);
             }
         }
 
-        if (chestFound)
+        if (shopFound)
         {
-            Debug.Log("Na polu: " + tilePosition + " znajduje siê sklep.");
+            //Debug.Log("Na polu: " + tilePosition + " znajduje siê sklep.");
             return true;
         }
 

@@ -13,6 +13,7 @@ namespace GG
         public int HealthPoints;
         public int DifficultyLevel;
         public String Name;
+        public bool isEnemyDead = false;
 
         private void Awake()
         {
@@ -32,6 +33,7 @@ namespace GG
         {
             enemyMarker.SetActive(false);
             enemyAnimator.SetTrigger("Dead");
+            isEnemyDead = true;
         }
     }
 }

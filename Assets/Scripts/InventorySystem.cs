@@ -26,11 +26,11 @@ public class InventorySystem : MonoBehaviour
 
     void Update()
     {
-        // Sprawdü, czy gracz nacisnπ≥ klawisz E
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            ToggleInventory();
-        }
+        //// Sprawdü, czy gracz nacisnπ≥ klawisz E
+        //if (Input.GetKeyDown(KeyCode.E))
+        //{
+        //    ToggleInventory();
+        //}
     }
 
     void ToggleInventory()

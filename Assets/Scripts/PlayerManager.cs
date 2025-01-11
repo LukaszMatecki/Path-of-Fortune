@@ -6,11 +6,11 @@ using System.Collections;
 
 public class PlayerManager : MonoBehaviour
 {
-    public static PlayerManager Instance; // Singleton
-    public TMP_Text coinsText; // Pole do wyœwietlania liczby monet
-    public TMP_Text coinsinfo; // Pole do wyœwietlania informacji o zdobytych monetach
-    public int coins; // Liczba monet gracza
-    private Coroutine infoCoroutine; // Przechowuje referencjê do aktywnej korutyny
+    public static PlayerManager Instance;
+    public TMP_Text coinsText;
+    public TMP_Text coinsinfo;
+    public int coins;
+    private Coroutine infoCoroutine;
 
     void Awake()
     {
@@ -24,13 +24,11 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    // Dodawanie monet
     public void AddCoins(int amount)
     {
         coins += amount;
         UpdateUI();
 
-        // Wyœwietl informacjê o zdobytych monetach
         ShowCoinsInfo(amount);
     }
     public void AddHP()
@@ -39,8 +37,7 @@ public class PlayerManager : MonoBehaviour
         DisplayHealthUpdateInfo();
     }
 
-    // Aktualizacja UI
-    private void UpdateUI()
+    public void UpdateUI()
     {
         if (coinsText != null)
         {
@@ -48,12 +45,11 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    // Wyœwietlanie informacji o zdobytych monetach
     private void ShowCoinsInfo(int amount)
     {
         if (infoCoroutine != null)
         {
-            StopCoroutine(infoCoroutine); // Zatrzymaj poprzedni¹ korutynê, jeœli istnieje
+            StopCoroutine(infoCoroutine);
         }
 
         infoCoroutine = StartCoroutine(DisplayCoinsInfo(amount));
@@ -64,14 +60,14 @@ public class PlayerManager : MonoBehaviour
         if (coinsinfo != null)
         {
             coinsinfo.text = "You found " + amount + " coins in chest!";
-            coinsinfo.gameObject.SetActive(true); // Upewnij siê, ¿e tekst jest widoczny
+            coinsinfo.gameObject.SetActive(true);
         }
 
-        yield return new WaitForSeconds(2f); // Wyœwietlaj przez 10 sekund
+        yield return new WaitForSeconds(2f);
 
         if (coinsinfo != null)
         {
-            coinsinfo.gameObject.SetActive(false); // Ukryj tekst po up³ywie czasu
+            coinsinfo.gameObject.SetActive(false);
         }
     }
 
@@ -80,14 +76,14 @@ public class PlayerManager : MonoBehaviour
         if (coinsinfo != null)
         {
             coinsinfo.text = "You gained 1 maximum health!";
-            coinsinfo.gameObject.SetActive(true); // Upewnij siê, ¿e tekst jest widoczny
+            coinsinfo.gameObject.SetActive(true);
         }
 
-        yield return new WaitForSeconds(2f); // Wyœwietlaj przez 10 sekund
+        yield return new WaitForSeconds(2f);
 
         if (coinsinfo != null)
         {
-            coinsinfo.gameObject.SetActive(false); // Ukryj tekst po up³ywie czasu
+            coinsinfo.gameObject.SetActive(false);
         }
     }
 }

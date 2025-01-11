@@ -24,7 +24,6 @@ public class TileSelector : MonoBehaviour
 
     [SerializeField] private MapStateSaveSystem saveSystem;
 
-    //public GameObject playerCharacter;
     private readonly List<Tile> selectedTiles = new();
     public Tile startingTile;
     public Tilemap tilemapGround;
@@ -414,6 +413,13 @@ public class TileSelector : MonoBehaviour
                         chest.CloseChest();
                     }
                     //Debug.Log("Raycast trafi³ w obiekt, ale nie jest to przeciwnik.");
+
+                    var shop = hit.collider.GetComponent<Shop>();
+                    if (shop != null)
+                    {
+                        //Debug.Log($"Znaleziono sklep na kafelku {tile.name}.");
+                        shop.OpenShop();
+                    }
                 }
                 //Debug.Log($"Brak obiektu na kafelku {tile.name}. Przechodzê do kolejnego.");
             }
