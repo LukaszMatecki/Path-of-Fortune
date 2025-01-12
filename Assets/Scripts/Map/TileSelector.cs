@@ -166,7 +166,7 @@ public class TileSelector : MonoBehaviour
     public void SetMaxSteps(int steps)
     {
         maxSteps = steps;
-        Debug.Log("Max Steps ustawione na: " + maxSteps);
+        //Debug.Log("Max Steps ustawione na: " + maxSteps);
     }
 
     public void HighlightPotentialMoves()
@@ -207,7 +207,7 @@ public class TileSelector : MonoBehaviour
         }
         else
         {
-            Debug.Log("Pole nie jest przyleg³e do ostatniego zaznaczonego.");
+            //Debug.Log("Pole nie jest przyleg³e do ostatniego zaznaczonego.");
         }
 
         UpdateTileHighlights();
@@ -254,12 +254,12 @@ public class TileSelector : MonoBehaviour
         if (isProcessingMoves)
         {
             characterAnimator.SetBool("isWalking", true);
-            Debug.Log("Ruchy ju¿ trwaj¹. Przycisk 'Ready' jest zablokowany.");
+            //Debug.Log("Ruchy ju¿ trwaj¹. Przycisk 'Ready' jest zablokowany.");
             return;
         }
 
         characterAnimator.SetBool("isWalking", true);
-        Debug.Log("Przycisk 'Ready' klikniêty - rozpoczynanie ruchu.");
+        //Debug.Log("Przycisk 'Ready' klikniêty - rozpoczynanie ruchu.");
         isProcessingMoves = true;
         StartCoroutine(MoveCharacterAlongPath());
     }
@@ -283,10 +283,10 @@ public class TileSelector : MonoBehaviour
         if (character != null)
         {
             PlayerInfo.Instance.PlayerPosition = character.transform.position;
-            Debug.Log("Zapisano pozycjê gracza");
+            //Debug.Log("Zapisano pozycjê gracza");
         }
 
-        saveSystem.AddEnemy(enemy.transform.position);
+        saveSystem.AddEntity(enemy.transform.position, "enemy");
         GameManager.Instance.SetCurrentEnemy(enemy);
 
         SceneManager.LoadScene("Fight");
@@ -408,9 +408,11 @@ public class TileSelector : MonoBehaviour
                     if (chest != null)
                     {
                         //Debug.Log($"Znaleziono skrzynkê na kafelku {tile.name}.");
+                        if (!chest.isOpened)
+                            PlayerManager.Instance.AddCoins(chest.coins);
                         chest.OpenChest();
-                        PlayerManager.Instance.AddCoins(chest.coins);
                         chest.CloseChest();
+                        saveSystem.AddEntity(chest.transform.position, "chest");
                     }
                     //Debug.Log("Raycast trafi³ w obiekt, ale nie jest to przeciwnik.");
 

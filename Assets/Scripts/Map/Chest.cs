@@ -4,12 +4,12 @@ public class Chest : MonoBehaviour
 {
     public int coins;
     private Animator animator;
-    private bool isOpened = false;
+    public bool isOpened = false;
     public GameObject marker;
 
     void Start()
     {
-        coins = Random.Range(1, 51);
+        coins = Random.Range(20, 51);
         animator = GetComponent<Animator>();
 
         if (marker == null)

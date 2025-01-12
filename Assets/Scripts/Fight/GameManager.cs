@@ -41,9 +41,9 @@ namespace GG
                     Name = enemy.Name
                 };
 
-                Debug.Log("Przeciwnik przypisany: " + enemy.Name);
-                Debug.Log("Zdrowie przeciwnika: " + enemy.HealthPoints);
-                Debug.Log("Poziom trudnoœci przeciwnika: " + enemy.DifficultyLevel);
+                //Debug.Log("Przeciwnik przypisany: " + enemy.Name);
+                //Debug.Log("Zdrowie przeciwnika: " + enemy.HealthPoints);
+                //Debug.Log("Poziom trudnoœci przeciwnika: " + enemy.DifficultyLevel);
 
                 // Przypisanie talii przeciwnika na podstawie poziomu trudnoœci
                 AssignEnemyDeck(enemy.DifficultyLevel);

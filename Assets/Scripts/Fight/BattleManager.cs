@@ -52,7 +52,7 @@ namespace GG
             {
                 enemyData = GameManager.Instance.CurrentEnemyData;
                 SetEnemyData(enemyData);
-                Debug.Log("Dane przeciwnika ustawione.");
+                //Debug.Log("Dane przeciwnika ustawione.");
 
                 var enemyDeck = GetEnemyDeckByDifficulty(enemyData.DifficultyLevel);
                 if (enemyDeck != null)
@@ -74,7 +74,7 @@ namespace GG
             if (playerInfo != null)
             {
                 currentPlayerHealth = playerInfo.maxHealth;
-                Debug.Log("Znaleziono PlayerInfo z maksymalnym zdrowiem: " + playerInfo.maxHealth);
+                //Debug.Log("Znaleziono PlayerInfo z maksymalnym zdrowiem: " + playerInfo.maxHealth);
                 UpdatePlayerHealthText();
             }
             else

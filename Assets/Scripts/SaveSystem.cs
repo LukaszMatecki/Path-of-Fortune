@@ -27,6 +27,7 @@ public class SaveData
     public float lightRotationZ;
 
     public List<Vector3> enemies;
+    public List<Vector3> chests;
 
     public int playerCoins;
 
@@ -197,11 +198,14 @@ public class SaveSystem : MonoBehaviour
         File.WriteAllBytes(screenshotPath, screenshot.EncodeToPNG());
 
         List<Vector3> enemies = new List<Vector3>();
+        List<Vector3> chests = new List<Vector3>();
         saveDirectory = Path.Combine(Application.persistentDataPath, "Saves");
-        string mapStatePath = Path.Combine(saveDirectory, "map_state.json");
+
+        string a = Path.Combine(saveDirectory, "tempSave");
+        string mapStatePath = Path.Combine(a, "map_state.json");
         if (File.Exists(mapStatePath))
         {
-            Debug.Log("wczaytano listeprzeciwnikow");
+            Debug.Log("Wczytano listê przeciwników");
             string mapStateJson = File.ReadAllText(mapStatePath);
             try
             {
@@ -209,7 +213,12 @@ public class SaveSystem : MonoBehaviour
                 if (mapStateData.enemies != null)
                 {
                     enemies = mapStateData.enemies;
-                    Debug.Log("wczaytano przeciwnika z listy");
+                    Debug.Log("Wczytano przeciwników z listy");
+                }
+                if (mapStateData.chests != null)
+                {
+                    chests = mapStateData.chests;
+                    Debug.Log("Wczytano skrzynki z listy");
                 }
             }
             catch (Exception ex)
@@ -236,6 +245,7 @@ public class SaveSystem : MonoBehaviour
             lightRotationY = directionalLight.transform.eulerAngles.y,
             lightRotationZ = directionalLight.transform.eulerAngles.z,
             enemies = enemies,
+            chests = chests,
             gameData = gameData
         };
 

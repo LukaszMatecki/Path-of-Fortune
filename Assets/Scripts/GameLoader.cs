@@ -6,14 +6,13 @@ using UnityEngine;
 public class GameLoader : MonoBehaviour
 {
     [SerializeField] private TMP_Text coinsText;
+    [SerializeField] private Light directionalLight;
+    [SerializeField] private GameObject player;
     [SerializeField] private TMP_Text timeText;
-    [SerializeField] private Light directionalLight; // Referencja do œwiat³a
-    [SerializeField] private GameObject player; // Referencja do obiektu gracza
     public static event Action OnMapStateLoaded;
 
     private void Start()
     {
-        // Sprawdzenie, czy GameDataManager istnieje i czy zosta³ za³adowany zapis
         if (GameDataManager.Instance == null || GameDataManager.Instance.LoadedSaveData == null)
         {
             Debug.LogWarning("Brak wczytanego zapisu gry. Skrypt GameLoader nie zostanie wykonany.");
@@ -28,7 +27,6 @@ public class GameLoader : MonoBehaviour
     {
         var saveData = GameDataManager.Instance.LoadedSaveData;
 
-        // Ustawienie pozycji gracza
         if (player != null)
         {
             var loadedPosition = new Vector3(
@@ -37,14 +35,10 @@ public class GameLoader : MonoBehaviour
                 saveData.playerPositionZ
             );
             player.transform.position = loadedPosition;
-            Debug.Log($"Pozycja gracza za³adowana: {loadedPosition}");
-        }
-        else
-        {
-            Debug.LogWarning("Nie przypisano obiektu gracza!");
+            //Debug.Log($"Pozycja gracza za³adowana: {loadedPosition}");
         }
 
-        // Ustawienie pozycji i rotacji œwiat³a
+        //Debug.LogWarning("Nie przypisano obiektu gracza!");
         if (directionalLight != null)
         {
             directionalLight.transform.position = new Vector3(
@@ -59,39 +53,34 @@ public class GameLoader : MonoBehaviour
                 saveData.lightRotationZ
             );
 
-            Debug.Log("Pozycja i rotacja œwiat³a zosta³y za³adowane.");
+            //Debug.Log("Pozycja i rotacja œwiat³a zosta³y za³adowane.");
         }
         else
         {
             Debug.LogWarning("Nie przypisano obiektu œwiat³a!");
         }
 
-        // Ustawienie czasu gry
         if (timeText != null)
         {
             var gameTimeInMinutes = saveData.gameTimeInMinutes;
             var hours = Mathf.FloorToInt(gameTimeInMinutes / 60);
             var minutes = Mathf.FloorToInt(gameTimeInMinutes % 60);
             timeText.text = $"{hours:D2}:{minutes:D2}";
-            Debug.Log($"Czas gry ustawiony na: {hours:D2}:{minutes:D2}");
+            //Debug.Log($"Czas gry ustawiony na: {hours:D2}:{minutes:D2}");
         }
         else
         {
             Debug.LogWarning("Nie przypisano obiektu tekstu do wyœwietlania czasu gry!");
         }
 
-        // Ustawienie liczby monet
-        if (coinsText != null)
-        {
-            coinsText.text = saveData.playerCoins.ToString();
-            Debug.Log($"Monety ustawione na: {saveData.playerCoins}");
-        }
-        else
-        {
-            Debug.LogWarning("Nie przypisano obiektu tekstu do wyœwietlania monet!");
-        }
 
-        // Usuniêcie martwych wrogów
+        if (coinsText != null)
+            coinsText.text = saveData.playerCoins.ToString();
+        //Debug.Log($"Monety ustawione na: {saveData.playerCoins}");
+        else
+            Debug.LogWarning("Nie przypisano obiektu tekstu do wyœwietlania monet!");
+
+
         if (saveData.enemies != null && saveData.enemies.Count > 0)
         {
             LayerMask overGroundLayer = LayerMask.GetMask("Tilemap_OverGround");
@@ -116,7 +105,33 @@ public class GameLoader : MonoBehaviour
             }
         }
 
-        // Wywo³anie zdarzenia o za³adowaniu mapy
+        if (saveData.chests != null && saveData.chests.Count > 0)
+        {
+            LayerMask overGroundLayer = LayerMask.GetMask("Tilemap_OverGround");
+            foreach (var chestPosition in saveData.chests)
+            {
+                var rayOrigin = new Vector3(chestPosition.x, chestPosition.y + 30f, chestPosition.z);
+
+                if (Physics.Raycast(rayOrigin, Vector3.down, out var hit, Mathf.Infinity, overGroundLayer))
+                {
+                    var chest = hit.collider.GetComponent<Chest>();
+                    if (chest != null)
+                    {
+                        chest.isOpened = true;
+                        Debug.Log($"Chest at {chestPosition} marked as open.");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"No chest found at {chestPosition}.");
+                    }
+                }
+                else
+                {
+                    Debug.Log("nie trafiono w skrzynie");
+                }
+            }
+        }
+
         OnMapStateLoaded?.Invoke();
     }
 }

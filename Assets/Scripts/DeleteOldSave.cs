@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GameInitialization : MonoBehaviour
 {
+    private string a;
     private string saveDirectory;
     public static GameInitialization Instance { get; private set; }
 
@@ -22,7 +23,8 @@ public class GameInitialization : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         // Sprawdzenie, czy jest zapisany plik i wywo³anie metody DeleteSaveFile()
-        saveDirectory = Path.Combine(Application.persistentDataPath, "Saves");
+        a = Path.Combine(Application.persistentDataPath, "Saves");
+        saveDirectory = Path.Combine(a, "tempSave");
         var saveFilePath = Path.Combine(saveDirectory, "map_state.json");
 
         // Jeœli plik zapisu istnieje, usuñ go
