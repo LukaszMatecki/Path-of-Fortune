@@ -1,30 +1,29 @@
-using UnityEngine;
-using TMPro;
+using System.Collections;
 using GG;
+using TMPro;
+using UnityEngine;
 
 public class MissionTracker : MonoBehaviour
 {
-    public int requiredCoins = 10;
+    [Header("Przeciwnicy")] public GameObject[] enemies;
 
-    [Header("Przeciwnicy")]
-    public GameObject[] enemies;
-
-    [Header("UI Misji")]
-    public TMP_Text missionStatusText;
+    public bool mission1Completed;
     public GameObject mission1Panel;
+    public bool mission2Completed;
     public GameObject mission2Panel;
 
-    public bool mission1Completed = false;
-    public bool mission2Completed = false;
+    [Header("UI Misji")] public TMP_Text missionStatusText;
 
-    void Start()
+    public int requiredCoins = 10;
+
+    private void Start()
     {
         if (mission1Panel != null) mission1Panel.SetActive(true);
         if (mission2Panel != null) mission2Panel.SetActive(true);
         if (missionStatusText != null) missionStatusText.gameObject.SetActive(false);
     }
 
-    void Update()
+    private void Update()
     {
         TrackMissions();
     }
@@ -52,17 +51,13 @@ public class MissionTracker : MonoBehaviour
 
     private bool AreAllEnemiesDead()
     {
-        foreach (GameObject enemyObj in enemies)
-        {
+        foreach (var enemyObj in enemies)
             if (enemyObj != null)
             {
-                Enemy enemy = enemyObj.GetComponent<Enemy>();
-                if (enemy != null && !enemy.isEnemyDead)
-                {
-                    return false;
-                }
+                var enemy = enemyObj.GetComponent<Enemy>();
+                if (enemy != null && !enemy.isEnemyDead) return false;
             }
-        }
+
         return true;
     }
 
@@ -70,32 +65,28 @@ public class MissionTracker : MonoBehaviour
     {
         if (missionStatusText != null)
         {
-            if(missionNumber==1)
+            if (missionNumber == 1)
             {
-                missionStatusText.text = $"Mission number 1 completed! : Defeat all enemies!";
+                missionStatusText.text = "Mission number 1 completed! : Defeat all enemies!";
                 missionStatusText.gameObject.SetActive(true);
                 StartCoroutine(HideMissionStatus());
             }
+
             if (missionNumber == 2)
             {
-                missionStatusText.text = $"Mission number 2 completed! : Collect 10 coins!";
+                missionStatusText.text = "Mission number 2 completed! : Collect 10 coins!";
                 missionStatusText.gameObject.SetActive(true);
                 StartCoroutine(HideMissionStatus());
             }
-
-
         }
 
         Debug.Log($"Mission {missionNumber} completed!");
     }
 
-    private System.Collections.IEnumerator HideMissionStatus()
+    private IEnumerator HideMissionStatus()
     {
         yield return new WaitForSeconds(3f);
 
-        if (missionStatusText != null)
-        {
-            missionStatusText.gameObject.SetActive(false);
-        }
+        if (missionStatusText != null) missionStatusText.gameObject.SetActive(false);
     }
 }

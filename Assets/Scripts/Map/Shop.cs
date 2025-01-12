@@ -1,27 +1,29 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class Shop : MonoBehaviour
 {
-    public GameObject shopUIPanel;
-    public Button exitButton;
     public TMP_Text coinsText;
+    public Button exitButton;
     public TMP_Text feedbackText;
     public GameObject[] hearts;
+    public GameObject[] itemImages;
 
     public Button[] shopSlots;
-    public GameObject[] itemImages;
+    public GameObject shopUIPanel;
 
     private void Start()
     {
+        SetCurrentHeartsAmount();
         shopUIPanel.SetActive(false);
         exitButton.onClick.AddListener(CloseShop);
-        for (int i = 0; i < shopSlots.Length; i++)
+        for (var i = 0; i < shopSlots.Length; i++)
         {
-            int index = i;
+            var index = i;
             shopSlots[i].onClick.AddListener(() => PurchaseItem(index));
         }
+
         UpdateCoinsUI();
     }
 
@@ -41,7 +43,7 @@ public class Shop : MonoBehaviour
 
     private void PurchaseItem(int slotIndex)
     {
-        int itemCost = 20;
+        var itemCost = 20;
         if (PlayerManager.Instance.coins >= itemCost)
         {
             Debug.Log($"Kupiono przedmiot w slocie {slotIndex}!");
@@ -51,10 +53,7 @@ public class Shop : MonoBehaviour
             feedbackText.text = "You purchased a health potion!";
 
             shopSlots[slotIndex].interactable = false;
-            if (itemImages[slotIndex] != null)
-            {
-                itemImages[slotIndex].SetActive(false);
-            }
+            if (itemImages[slotIndex] != null) itemImages[slotIndex].SetActive(false);
         }
         else
         {
@@ -65,15 +64,28 @@ public class Shop : MonoBehaviour
 
     private void ActivateHeart()
     {
-        foreach (GameObject heart in hearts)
-        {
+        foreach (var heart in hearts)
             if (!heart.activeSelf)
             {
                 heart.SetActive(true);
+                PlayerInfo.Instance.currentLives += 1;
                 break;
             }
+    }
+
+    public void SetCurrentHeartsAmount()
+    {
+        foreach (GameObject heart in hearts)
+        {
+            heart.SetActive(false);
+        }
+
+        for (var i = 0; i < PlayerInfo.Instance.currentLives && i < hearts.Length; i++)
+        {
+            hearts[i].SetActive(true);
         }
     }
+
 
     private void UpdateCoinsUI()
     {

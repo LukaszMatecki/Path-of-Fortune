@@ -157,11 +157,11 @@ public class MapStateSaveSystem : MonoBehaviour
                 }
 
                 //Debug.Log($"Map state loaded. Game time restored to {gameTimer.timeInMinutes} minutes.");
-                LayerMask overGroundLayer = LayerMask.GetMask("Tilemap_OverGround");
-
+              
                 foreach (GameObject heart in hearts)
                 {
-                    heart.SetActive(false); 
+                    heart.SetActive(false);
+                    PlayerInfo.Instance.currentLives = 0;
                 }
 
                 for (int i = 0; i < saveData.activeHearts; i++)
@@ -169,9 +169,11 @@ public class MapStateSaveSystem : MonoBehaviour
                     if (i < hearts.Length)
                     {
                         hearts[i].SetActive(true);
+                        PlayerInfo.Instance.currentLives += 1;
                     }
                 }
 
+                LayerMask overGroundLayer = LayerMask.GetMask("Tilemap_OverGround");
 
                 for (var i = 0; i < saveData.enemies.Count; i++)
                 {

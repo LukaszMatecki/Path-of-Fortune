@@ -30,6 +30,9 @@ public class SaveData
     public List<Vector3> chests;
 
     public int playerCoins;
+    public int activeHearts;
+    public bool mission1Completed;
+    public bool mission2Completed;
 
 
     public Dictionary<string, object> gameData;
@@ -50,7 +53,8 @@ public class SaveSystem : MonoBehaviour
     [SerializeField] private TMP_InputField saveNameInputField;
     [SerializeField] private Button saveButton;
     [SerializeField] private int playerCoins;
-    
+    public GameObject[] hearts;
+
 
     private bool isSaving = false;
 
@@ -197,6 +201,10 @@ public class SaveSystem : MonoBehaviour
 
         File.WriteAllBytes(screenshotPath, screenshot.EncodeToPNG());
 
+        MissionTracker missionTracker = FindObjectOfType<MissionTracker>();
+        bool mission1Completed = missionTracker != null && missionTracker.mission1Completed;
+        bool mission2Completed = missionTracker != null && missionTracker.mission2Completed;
+
         List<Vector3> enemies = new List<Vector3>();
         List<Vector3> chests = new List<Vector3>();
         saveDirectory = Path.Combine(Application.persistentDataPath, "Saves");
@@ -244,8 +252,12 @@ public class SaveSystem : MonoBehaviour
             lightRotationX = directionalLight.transform.eulerAngles.x,
             lightRotationY = directionalLight.transform.eulerAngles.y,
             lightRotationZ = directionalLight.transform.eulerAngles.z,
+            activeHearts = CountActiveHearts(),
             enemies = enemies,
             chests = chests,
+            mission1Completed = mission1Completed,
+            mission2Completed = mission2Completed,
+
             gameData = gameData
         };
 
@@ -255,7 +267,20 @@ public class SaveSystem : MonoBehaviour
         SaveDataManager.currentSaveData = saveData;
         Debug.Log($"Game saved: {saveName}");
     }
+    private int CountActiveHearts()
+    {
+        int activeHeartCount = 0;
 
+        foreach (GameObject heart in hearts)
+        {
+            if (heart.activeSelf)
+            {
+                activeHeartCount++;
+            }
+        }
+
+        return activeHeartCount;
+    }
 
     private Texture2D CaptureScreenshot()
     {
@@ -310,64 +335,64 @@ public class SaveSystem : MonoBehaviour
         Debug.Log($"Save deleted: {saveName}");
     }
 
-    public void LoadGame(SaveData saveData)
-    {
-        if (player != null)
-        {
-            player.transform.position = new Vector3(
-                saveData.playerPositionX,
-                saveData.playerPositionY,
-                saveData.playerPositionZ
-            );
-            PlayerInfo.Instance.PlayerPosition = new Vector3(saveData.playerPositionX, saveData.playerPositionY, saveData.playerPositionZ);
-            Debug.Log($"Player position loaded: {player.transform.position}");
-            Debug.Log($"Player position in playerinfo is: {PlayerInfo.Instance.PlayerPosition}");
-        }
-        else
-        {
-            Debug.LogWarning("Player object is not assigned!");
-        }
+    //public void LoadGame(SaveData saveData)
+    //{
+    //    if (player != null)
+    //    {
+    //        player.transform.position = new Vector3(
+    //            saveData.playerPositionX,
+    //            saveData.playerPositionY,
+    //            saveData.playerPositionZ
+    //        );
+    //        PlayerInfo.Instance.PlayerPosition = new Vector3(saveData.playerPositionX, saveData.playerPositionY, saveData.playerPositionZ);
+    //        Debug.Log($"Player position loaded: {player.transform.position}");
+    //        Debug.Log($"Player position in playerinfo is: {PlayerInfo.Instance.PlayerPosition}");
+    //    }
+    //    else
+    //    {
+    //        Debug.LogWarning("Player object is not assigned!");
+    //    }
 
-        if (directionalLight != null)
-        {
-            directionalLight.transform.position = new Vector3(
-                saveData.lightPositionX,
-                saveData.lightPositionY,
-                saveData.lightPositionZ
-            );
+    //    if (directionalLight != null)
+    //    {
+    //        directionalLight.transform.position = new Vector3(
+    //            saveData.lightPositionX,
+    //            saveData.lightPositionY,
+    //            saveData.lightPositionZ
+    //        );
 
-            directionalLight.transform.eulerAngles = new Vector3(
-                saveData.lightRotationX,
-                saveData.lightRotationY,
-                saveData.lightRotationZ
-            );
+    //        directionalLight.transform.eulerAngles = new Vector3(
+    //            saveData.lightRotationX,
+    //            saveData.lightRotationY,
+    //            saveData.lightRotationZ
+    //        );
 
-            Debug.Log($"Light position and rotation loaded: {directionalLight.transform.position}, {directionalLight.transform.eulerAngles}");
-        }
-        else
-        {
-            Debug.LogWarning("Directional Light object is not assigned!");
-        }
+    //        Debug.Log($"Light position and rotation loaded: {directionalLight.transform.position}, {directionalLight.transform.eulerAngles}");
+    //    }
+    //    else
+    //    {
+    //        Debug.LogWarning("Directional Light object is not assigned!");
+    //    }
 
         
-        PlayerManager.Instance.coins = saveData.playerCoins;
-        Debug.Log($"Coins loaded: {PlayerManager.Instance.coins}");
+    //    PlayerManager.Instance.coins = saveData.playerCoins;
+    //    Debug.Log($"Coins loaded: {PlayerManager.Instance.coins}");
 
 
-        if (saveData.enemies != null && saveData.enemies.Count > 0)
-        {
-            Debug.Log($"Loaded {saveData.enemies.Count} enemies.");
-            foreach (var enemy in saveData.enemies)
-            {
-                Debug.Log($"Enemy at position: {enemy}");
-            }
-        }
-        else
-        {
-            Debug.Log("No enemies loaded.");
-        }
+    //    if (saveData.enemies != null && saveData.enemies.Count > 0)
+    //    {
+    //        Debug.Log($"Loaded {saveData.enemies.Count} enemies.");
+    //        foreach (var enemy in saveData.enemies)
+    //        {
+    //            Debug.Log($"Enemy at position: {enemy}");
+    //        }
+    //    }
+    //    else
+    //    {
+    //        Debug.Log("No enemies loaded.");
+    //    }
         
-    }
+    //}
 
     public static class SaveDataManager
     {

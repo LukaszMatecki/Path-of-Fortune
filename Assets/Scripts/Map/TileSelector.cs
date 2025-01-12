@@ -39,9 +39,18 @@ public class TileSelector : MonoBehaviour
     private void Awake()
     {
         if (PlayerInfo.Instance.hasGameStarted) saveSystem.LoadMapState();
-        
-        RestorePlayerPosition();
-        CheckEnemyUnderPlayer();
+        if (PlayerInfo.Instance.battleJustLost)
+        {
+            PlayerInfo.Instance.battleJustLost = false;
+            character.transform.position = new Vector3(-1.5f, 0.2f, -15.5f);
+            SetStartingTileFromPlayerPosition();
+        }
+        else
+        {
+            RestorePlayerPosition();
+            CheckEnemyUnderPlayer();
+        }
+
 
     }
 
@@ -72,9 +81,14 @@ public class TileSelector : MonoBehaviour
             var enemy = hit.collider.GetComponent<Enemy>();
             if (enemy != null)
             {
-                PlayerManager.Instance.AddHP();
-                Debug.Log($"Enemy {enemy.name} found under the player.");
-                StartCoroutine(HandleEnemyDead(enemy));
+                
+                if (!PlayerInfo.Instance.battleJustLost)
+                {
+                    saveSystem.AddEntity(enemy.transform.position, "enemy");
+                    Debug.Log($"Enemy {enemy.name} found under the player.");
+                    StartCoroutine(HandleEnemyDead(enemy));
+                }
+                
             }
         }
     }
@@ -286,7 +300,7 @@ public class TileSelector : MonoBehaviour
             //Debug.Log("Zapisano pozycjê gracza");
         }
 
-        saveSystem.AddEntity(enemy.transform.position, "enemy");
+        
         GameManager.Instance.SetCurrentEnemy(enemy);
 
         SceneManager.LoadScene("Fight");

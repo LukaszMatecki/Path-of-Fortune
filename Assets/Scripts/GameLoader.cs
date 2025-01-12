@@ -10,6 +10,7 @@ public class GameLoader : MonoBehaviour
     [SerializeField] private GameObject player;
     [SerializeField] private TMP_Text timeText;
     public static event Action OnMapStateLoaded;
+    public GameObject[] hearts;
 
     private void Start()
     {
@@ -79,6 +80,34 @@ public class GameLoader : MonoBehaviour
         //Debug.Log($"Monety ustawione na: {saveData.playerCoins}");
         else
             Debug.LogWarning("Nie przypisano obiektu tekstu do wyœwietlania monet!");
+
+        Debug.Log(
+            $"Wczytywanie stanu misji: Misja 1 = {saveData.mission1Completed}, Misja 2 = {saveData.mission2Completed}");
+        var missionTracker = FindObjectOfType<MissionTracker>();
+        if (missionTracker != null)
+        {
+            missionTracker.mission1Completed = saveData.mission1Completed;
+            missionTracker.mission2Completed = saveData.mission2Completed;
+        }
+        else
+        {
+            Debug.LogWarning("Nie znaleziono obiektu MissionTracker.");
+        }
+
+        foreach (GameObject heart in hearts)
+        {
+            heart.SetActive(false);
+            PlayerInfo.Instance.currentLives = 0;
+        }
+
+        for (int i = 0; i < saveData.activeHearts; i++)
+        {
+            if (i < hearts.Length)
+            {
+                hearts[i].SetActive(true);
+                PlayerInfo.Instance.currentLives += 1;
+            }
+        }
 
 
         if (saveData.enemies != null && saveData.enemies.Count > 0)

@@ -4,21 +4,22 @@ public class GameDataManager : MonoBehaviour
 {
     public static GameDataManager Instance;
 
-    public SaveData LoadedSaveData; // Dane za³adowanego zapisu
-    public Vector3 playerPosition = new Vector3(-1.5f, 0f, -15.5f);
+    public SaveData LoadedSaveData;
+    public Vector3 playerPosition = new(-1.5f, 0f, -15.5f);
     public bool IsSaveLoaded { get; set; } = false;
+
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            //Debug.Log("SaveSystem initialized GAMEDATAMANAGER.");  // Dodaj logi w Awake()
+            //Debug.Log("SaveSystem initialized GAMEDATAMANAGER.");
         }
         else
         {
             Destroy(gameObject);
-            //Debug.Log("SaveSystem already exists GAMEDATAMANAGER.");  // Jeœli instancja ju¿ istnieje, usuwamy obiekt
+            //Debug.Log("SaveSystem already exists GAMEDATAMANAGER.");  
         }
     }
 
@@ -40,7 +41,7 @@ public class GameDataManager : MonoBehaviour
     public void ClearData()
     {
         LoadedSaveData = null;
-        playerPosition = new Vector3(-1.5f, 0f, -15.5f); // Domyœlna pozycja pocz¹tkowa
+        playerPosition = new Vector3(-1.5f, 0f, -15.5f);
         Debug.Log("Dane gry zresetowane. Nowa gra rozpoczêta.");
     }
 
@@ -48,5 +49,4 @@ public class GameDataManager : MonoBehaviour
     {
         Debug.Log("Game data loaded: " + (LoadedSaveData != null ? "Yes" : "No"));
     }
-
 }

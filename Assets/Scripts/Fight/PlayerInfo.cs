@@ -9,8 +9,11 @@ public class PlayerInfo : MonoBehaviour
     public static PlayerInfo Instance { get; private set; }
     public bool hasGameStarted = false;
     public Vector3 PlayerPosition { get; set; } = Vector3.zero;
-
+    public bool hasPlayerLost = false;
+    public bool battleJustLost = false;
+    
     public int maxHealth = 5;
+    public int currentLives = 1;
 
     private void Awake()
     {

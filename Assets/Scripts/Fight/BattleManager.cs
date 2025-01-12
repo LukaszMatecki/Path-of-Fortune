@@ -332,13 +332,26 @@ namespace GG
             if (currentPlayerHealth <= 0)
             {
                 Debug.Log("Gracz zosta³ pokonany!");
-                SceneManager.LoadScene("MainMenu");
+
+                PlayerInfo.Instance.currentLives -= 1;
+                PlayerInfo.Instance.battleJustLost = true;
+                Debug.Log($"battlejustlost state: {PlayerInfo.Instance.battleJustLost}");
+                if (PlayerInfo.Instance.currentLives < 0)
+                {
+                    PlayerInfo.Instance.hasPlayerLost = true;
+                    SceneManager.LoadScene("MainMenu");
+                }
+                else
+                {
+
+                    SceneManager.LoadScene("SampleScene");
+                }
+                
             }
 
             if (enemyData.HealthPoints <= 0)
             {
-                Debug.Log("Przeciwnik zosta³ pokonany!");
-
+                PlayerManager.Instance.AddHP();
                 SceneManager.LoadScene("SampleScene");
             }
         }
