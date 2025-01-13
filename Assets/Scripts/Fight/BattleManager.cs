@@ -43,6 +43,7 @@ namespace GG
 
         private PlayerInfo playerInfo;
         [SerializeField] private TMP_Text PlayerNameText;
+        [SerializeField] private ActiveHeartsModifier activeHeartsModifier;
 
         public bool useManualTurnEnding = true; // Flaga do sterowania trybem koñczenia tury
 
@@ -335,6 +336,14 @@ namespace GG
 
                 PlayerInfo.Instance.currentLives -= 1;
                 PlayerInfo.Instance.battleJustLost = true;
+                if (activeHeartsModifier != null)
+                {
+                    activeHeartsModifier.DecreaseActiveHearts();
+                }
+                else
+                {
+                    Debug.LogError("ActiveHeartsModifier is not assigned in the Inspector.");
+                }
                 Debug.Log($"battlejustlost state: {PlayerInfo.Instance.battleJustLost}");
                 if (PlayerInfo.Instance.currentLives < 0)
                 {

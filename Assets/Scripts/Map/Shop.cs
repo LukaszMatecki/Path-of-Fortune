@@ -21,8 +21,10 @@ public class Shop : MonoBehaviour
         for (var i = 0; i < shopSlots.Length; i++)
         {
             var index = i;
+            shopSlots[i].onClick.RemoveAllListeners();
             shopSlots[i].onClick.AddListener(() => PurchaseItem(index));
         }
+
 
         UpdateCoinsUI();
     }

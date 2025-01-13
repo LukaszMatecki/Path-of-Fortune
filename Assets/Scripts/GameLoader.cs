@@ -122,7 +122,7 @@ public class GameLoader : MonoBehaviour
                     var enemy = hit.collider.GetComponent<Enemy>();
                     if (enemy != null)
                     {
-                        enemy.EnemyDead();
+                        enemy.EnemyRemoveMarker();
                         Destroy(enemy.gameObject);
                         Debug.Log($"Wróg na pozycji {enemyPosition} zosta³ usuniêty.");
                     }

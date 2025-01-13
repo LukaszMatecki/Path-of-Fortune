@@ -78,7 +78,6 @@ public class MapStateSaveSystem : MonoBehaviour
             saveData.chests.Add(position);
         }
 
-        // Aktualizacja innych danych
         saveData.lightPositionX = directionalLight.transform.position.x;
         saveData.lightPositionY = directionalLight.transform.position.y;
         saveData.lightPositionZ = directionalLight.transform.position.z;
@@ -93,6 +92,40 @@ public class MapStateSaveSystem : MonoBehaviour
         File.WriteAllText(filePath, JsonUtility.ToJson(saveData, true));
         Debug.Log($"{type} position added and map state saved.");
     }
+
+    public void SaveCurrentState()
+    {
+        var filePath = Path.Combine(saveDirectory, mapSaveFileName);
+        MapStateSaveData saveData;
+
+        if (File.Exists(filePath))
+        {
+            var json = File.ReadAllText(filePath);
+            saveData = JsonUtility.FromJson<MapStateSaveData>(json);
+        }
+        else
+        {
+            saveData = new MapStateSaveData
+            {
+                enemies = new List<Vector3>(),
+                chests = new List<Vector3>()
+            };
+        }
+
+        saveData.lightPositionX = directionalLight.transform.position.x;
+        saveData.lightPositionY = directionalLight.transform.position.y;
+        saveData.lightPositionZ = directionalLight.transform.position.z;
+        saveData.lightRotationX = directionalLight.transform.eulerAngles.x;
+        saveData.lightRotationY = directionalLight.transform.eulerAngles.y;
+        saveData.lightRotationZ = directionalLight.transform.eulerAngles.z;
+        saveData.gameTimeInMinutes = gameTimer.timeInMinutes;
+        saveData.playerCoins = PlayerManager.Instance.coins;
+        saveData.activeHearts = CountActiveHearts();
+
+        File.WriteAllText(filePath, JsonUtility.ToJson(saveData, true));
+        Debug.Log("Current state saved without modifying enemies or chests.");
+    }
+
 
     private int CountActiveHearts()
     {

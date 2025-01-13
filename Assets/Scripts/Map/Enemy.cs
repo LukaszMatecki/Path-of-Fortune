@@ -35,5 +35,10 @@ namespace GG
             enemyAnimator.SetTrigger("Dead");
             isEnemyDead = true;
         }
+        public void EnemyRemoveMarker()
+        {
+            enemyMarker.SetActive(false);
+            //isEnemyDead = true;
+        }
     }
 }

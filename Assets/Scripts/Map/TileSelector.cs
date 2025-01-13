@@ -302,7 +302,7 @@ public class TileSelector : MonoBehaviour
 
         
         GameManager.Instance.SetCurrentEnemy(enemy);
-
+        saveSystem.SaveCurrentState();
         SceneManager.LoadScene("Fight");
     }
 
