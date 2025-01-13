@@ -34,7 +34,7 @@ public class DirectionalLightController : MonoBehaviour
             timeInMinutes = GameDataManager.Instance.LoadedSaveData.gameTimeInMinutes; // Przypisanie wczytanego czasu
             //Debug.Log($"Wczytano czas gry: {timeInMinutes} minut");
         }
-        else if(PlayerInfo.Instance.hasGameStarted == false)
+        else
         {
             timeInMinutes = 14f * 60f; // Domyœlny czas (14:00)
             Debug.Log("Ustawiono domyœlny czas: 14:00");

@@ -63,6 +63,9 @@ public class PauseMenuScript : MonoBehaviour
 
     public void Home()
     {
+        if (PlayerInfo.Instance != null)
+            PlayerInfo.Instance.hasGameStarted = false;
+
         SceneManager.LoadScene("MainMenu");
         Time.timeScale = 1;
         gamePaused = false;

@@ -38,7 +38,11 @@ public class TileSelector : MonoBehaviour
 
     private void Awake()
     {
+
         if (PlayerInfo.Instance.hasGameStarted) saveSystem.LoadMapState();
+
+        
+
         if (PlayerInfo.Instance.battleJustLost)
         {
             PlayerInfo.Instance.battleJustLost = false;
@@ -318,7 +322,7 @@ public class TileSelector : MonoBehaviour
         }
         else
         {
-            //Debug.Log("playerinfo jest null");
+            Debug.Log("playerinfo jest null");
         }
     }
 

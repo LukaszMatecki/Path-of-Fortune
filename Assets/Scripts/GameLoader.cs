@@ -81,18 +81,37 @@ public class GameLoader : MonoBehaviour
         else
             Debug.LogWarning("Nie przypisano obiektu tekstu do wyúwietlania monet!");
 
-        Debug.Log(
-            $"Wczytywanie stanu misji: Misja 1 = {saveData.mission1Completed}, Misja 2 = {saveData.mission2Completed}");
-        var missionTracker = FindObjectOfType<MissionTracker>();
-        if (missionTracker != null)
+        Debug.Log($"Wczytywanie stanu misji: Misja 1 = {saveData.mission1Completed}, Misja 2 = {saveData.mission2Completed}");
+
+        GameObject canvas = GameObject.Find("Canvas"); // Znajdü g≥Ûwny Canvas
+        if (canvas != null)
         {
-            missionTracker.mission1Completed = saveData.mission1Completed;
-            missionTracker.mission2Completed = saveData.mission2Completed;
+            Transform missionPanelTransform = canvas.transform.Find("MissionPanel"); // Znajdü MissionPanel w Canvas
+            if (missionPanelTransform != null)
+            {
+                MissionTracker missionTracker = missionPanelTransform.GetComponent<MissionTracker>();
+                if (missionTracker != null)
+                {
+                    missionTracker.mission1Completed = saveData.mission1Completed;
+                    missionTracker.mission2Completed = saveData.mission2Completed;
+                    Debug.Log("Stan misji zosta≥ za≥adowany.");
+                }
+                else
+                {
+                    Debug.LogWarning("Nie znaleziono komponentu MissionTracker w MissionPanel.");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("Nie znaleziono MissionPanel w Canvas.");
+            }
         }
         else
         {
-            Debug.LogWarning("Nie znaleziono obiektu MissionTracker.");
+            Debug.LogWarning("Nie znaleziono Canvas.");
         }
+
+
 
         foreach (GameObject heart in hearts)
         {

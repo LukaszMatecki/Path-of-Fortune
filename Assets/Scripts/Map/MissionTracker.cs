@@ -5,24 +5,29 @@ using UnityEngine;
 
 public class MissionTracker : MonoBehaviour
 {
-    [Header("Przeciwnicy")] public GameObject[] enemies;
+    [Header("Przeciwnicy")]
+    public GameObject[] enemies;
 
     public bool mission1Completed;
     public GameObject mission1Panel;
     public bool mission2Completed;
     public GameObject mission2Panel;
 
-    [Header("UI Misji")] public TMP_Text missionStatusText;
+    [Header("UI Misji")]
+    public TMP_Text missionStatusText;
 
     public int requiredCoins = 10;
 
     private void Start()
     {
-        if (mission1Panel != null) mission1Panel.SetActive(true);
-        if (mission2Panel != null) mission2Panel.SetActive(true);
-        if (missionStatusText != null) missionStatusText.gameObject.SetActive(false);
+        if (missionStatusText != null)
+            missionStatusText.gameObject.SetActive(false);
     }
 
+    private void Awake()
+    {
+        CheckCompletedMissions();
+    }
     private void Update()
     {
         TrackMissions();
@@ -52,11 +57,14 @@ public class MissionTracker : MonoBehaviour
     private bool AreAllEnemiesDead()
     {
         foreach (var enemyObj in enemies)
+        {
             if (enemyObj != null)
             {
                 var enemy = enemyObj.GetComponent<Enemy>();
-                if (enemy != null && !enemy.isEnemyDead) return false;
+                if (enemy != null && !enemy.isEnemyDead)
+                    return false;
             }
+        }
 
         return true;
     }
@@ -87,6 +95,26 @@ public class MissionTracker : MonoBehaviour
     {
         yield return new WaitForSeconds(3f);
 
-        if (missionStatusText != null) missionStatusText.gameObject.SetActive(false);
+        if (missionStatusText != null)
+            missionStatusText.gameObject.SetActive(false);
+    }
+
+    private void CheckCompletedMissions()
+    {
+        if (mission1Completed)
+        {
+            if (mission1Panel != null)
+                mission1Panel.SetActive(false);
+
+            Debug.Log("Mission 1 is already completed. Panel hidden.");
+        }
+
+        if (mission2Completed)
+        {
+            if (mission2Panel != null)
+                mission2Panel.SetActive(false);
+
+            Debug.Log("Mission 2 is already completed. Panel hidden.");
+        }
     }
 }

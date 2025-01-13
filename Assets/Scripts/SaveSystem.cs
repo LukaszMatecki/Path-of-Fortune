@@ -201,9 +201,23 @@ public class SaveSystem : MonoBehaviour
 
         File.WriteAllBytes(screenshotPath, screenshot.EncodeToPNG());
 
-        MissionTracker missionTracker = FindObjectOfType<MissionTracker>();
-        bool mission1Completed = missionTracker != null && missionTracker.mission1Completed;
-        bool mission2Completed = missionTracker != null && missionTracker.mission2Completed;
+        bool mission1Completed = false;
+        bool mission2Completed = false;
+
+        GameObject canvas = GameObject.Find("Canvas");
+        if (canvas != null)
+        {
+            Transform missionPanelTransform = canvas.transform.Find("MissionPanel");
+            if (missionPanelTransform != null)
+            {
+                MissionTracker missionTracker = missionPanelTransform.GetComponent<MissionTracker>();
+                if (missionTracker != null)
+                {
+                    mission1Completed = missionTracker.mission1Completed;
+                    mission2Completed = missionTracker.mission2Completed;
+                }
+            }
+        }
 
         List<Vector3> enemies = new List<Vector3>();
         List<Vector3> chests = new List<Vector3>();

@@ -42,6 +42,8 @@ public class GameDataManager : MonoBehaviour
     {
         LoadedSaveData = null;
         playerPosition = new Vector3(-1.5f, 0f, -15.5f);
+        if(PlayerInfo.Instance != null)
+            PlayerInfo.Instance.currentLives = 0;
         Debug.Log("Dane gry zresetowane. Nowa gra rozpoczêta.");
     }
 
