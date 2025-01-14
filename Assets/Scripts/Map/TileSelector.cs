@@ -108,7 +108,7 @@ public class TileSelector : MonoBehaviour
         enemy.EnemyDead();
 
         SetStartingTileFromPlayerPosition();
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(3f);
         DeleteEnemy(enemy);
     }
 

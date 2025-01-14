@@ -31,9 +31,28 @@ public class MapStateSaveSystem : MonoBehaviour
 
     private void Awake()
     {
-        a = Path.Combine(Application.persistentDataPath, "Saves");
-        saveDirectory = Path.Combine(a, "tempSave");
-        if (!Directory.Exists(saveDirectory)) Directory.CreateDirectory(saveDirectory);
+        try
+        {
+            a = Path.Combine(Application.persistentDataPath, "Saves");
+            Debug.Log($"Directory 'a' set to: {a}");
+            saveDirectory = Path.Combine(a, "tempSave");
+            Debug.Log($"Save directory set to: {saveDirectory}");
+
+            if (!Directory.Exists(saveDirectory))
+            {
+                Directory.CreateDirectory(saveDirectory);
+                Debug.Log($"Save directory created at: {saveDirectory}");
+            }
+            else
+            {
+                Debug.Log($"Save directory already exists at: {saveDirectory}");
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Error in MapStateSaveSystem.Awake: {ex.Message}");
+        }
     }
 
     public List<Vector3> GetEnemies()
@@ -52,7 +71,28 @@ public class MapStateSaveSystem : MonoBehaviour
 
     public void AddEntity(Vector3 position, string type)
     {
+        Debug.Log($"mapSaveFileName: {mapSaveFileName}");
+        if (string.IsNullOrEmpty(mapSaveFileName))
+        {
+            Debug.LogError("mapSaveFileName is null or empty!");
+        }
+
+        Debug.Log($"AddEntity called with position: {position}, type: {type}");
+        Debug.Log($"saveDirectory: {saveDirectory}, mapSaveFileName: {mapSaveFileName}");
+
+        if (string.IsNullOrEmpty(saveDirectory))
+        {
+            Debug.LogError("saveDirectory is null or empty!");
+            return;
+        }
+        if (string.IsNullOrEmpty(mapSaveFileName))
+        {
+            Debug.LogError("mapSaveFileName is null or empty!");
+            return;
+        }
+
         var filePath = Path.Combine(saveDirectory, mapSaveFileName);
+        Debug.Log($"filePath: {filePath}");
         MapStateSaveData saveData;
 
         if (File.Exists(filePath))
