@@ -9,7 +9,7 @@ public class Chest : MonoBehaviour
 
     void Start()
     {
-        coins = Random.Range(20, 51);
+        coins = Random.Range(30, 51);
         animator = GetComponent<Animator>();
 
         if (marker == null)

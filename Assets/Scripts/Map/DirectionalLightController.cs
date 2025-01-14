@@ -36,7 +36,7 @@ public class DirectionalLightController : MonoBehaviour
         }
         else
         {
-            timeInMinutes = 14f * 60f; // Domyœlny czas (14:00)
+            //timeInMinutes = 14f * 60f; // Domyœlny czas (14:00)
             Debug.Log("Ustawiono domyœlny czas: 14:00");
         }
 

@@ -1235,6 +1235,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b743370ac3e4ec2a1668f5455a8ef8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &230639650
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 230639652}
+  - component: {fileID: 230639651}
+  m_Layer: 0
+  m_Name: hasGameStarted
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &230639651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 230639650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0c7ce6697b2de74d8a868148fde6b13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &230639652
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 230639650}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 671.0306, y: 440.40482, z: -20.834667}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &310872166
 GameObject:
   m_ObjectHideFlags: 0
@@ -1722,6 +1766,50 @@ AudioSource:
   m_CorrespondingSourceObject: {fileID: 5115150826408757875, guid: 207526007deb37f4c9465679aa7fd4cb, type: 3}
   m_PrefabInstance: {fileID: 3098191791140727334}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &374416571
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 374416573}
+  - component: {fileID: 374416572}
+  m_Layer: 0
+  m_Name: HasPlayerLost
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &374416572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 374416571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8344a8c0167b3f541a2f8fddf10d72f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &374416573
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 374416571}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 909.2022, y: 510.11295, z: -23.279505}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &382071901 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8936334994876616767, guid: fb969f87d6229ce4da25fa5e87950f49, type: 3}
@@ -2812,9 +2900,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "AlphaGame is a tactical 3D game prototype developed by two students as
-    part of a creative project. \nThe game combines strategic board movement, dice
-    mechanics, and engaging card-based combat. \nPlayers move their character across
+  m_text: "Path of Fortune is a tactical 3D game prototype developed by two students
+    as part of a creative project. \nThe game combines strategic board movement,
+    dice mechanics, and card-based combat. \nPlayers move their character across
     a tiled map based on dice rolls, encounter enemies, and interact with various
     objects scattered across the map.\n"
   m_isRightToLeft: 0
@@ -3733,7 +3821,6 @@ GameObject:
   m_Component:
   - component: {fileID: 773743685}
   - component: {fileID: 773743684}
-  - component: {fileID: 773743686}
   m_Layer: 0
   m_Name: Deleter
   m_TagString: Untagged
@@ -3768,18 +3855,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &773743686
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 773743683}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0c7ce6697b2de74d8a868148fde6b13, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &774089451 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 389331724668480323, guid: 02b25a5fefad190429313675ab9d6214, type: 3}
@@ -3926,63 +4001,20 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Zmiany:
-
-    - dodana zmiana czasu dzien/noc
-
-    - dodane dynamiczne
-    oswietlenie w nocy
-
-    - dodana skala czasu z mozliwoscia kontroli przez gracza
-
-    -
-    dodany system radia z mozliwoscia zmiany utworu
-
-    - dodany system misji ze
-    sledzeniem postepow
-
-    - dodany ekwipunek postaci
-
-    - dodany sklep z mozliwoscia
-    kupna przedmiotu za monety zdobyte w grze
-
-    - szczegolowo wymodelowana mapa
-    wraz z animacjami
-
-    - udzwiekowanienie 3D sceny
-
-    - dodano skrzynki z monetami
-
-    -
-    dodano przeciwnika wraz z animacjami
-
-    - poprawiona animacja postaci
-
-    -
-    dodana animacja obrotu kostka z losowaniem ruchu
-
-    - dodano markery ulatwiajace
-    rozgrywke
-
-    - dodano podpowiedzi dla gracza
-
-    - dodano system czasteczkowy
-    imitujacy ogien i dym
-
-    - system walki oparty na kartach oraz nagroda za wygranie
-    walki
-
-    - dodany system zapisu rozgrywki wraz z calym postepem gry
-
-    -
-    dodany system autozapisu progresu gracza podczas rozgrywki
-
-    - poprawki graficzne
-    stylu UI
-
-    - dodano PP filter oraz poprawiono ustawienia graficzne
-
-'
+  m_text: "Zmiany:\r\n- dodana zmiana czasu dzien/noc\r\n- dodane dynamiczne oswietlenie
+    w nocy\r\n- dodana skala czasu z mozliwoscia kontroli przez gracza\r\n- dodany
+    system radia z mozliwoscia zmiany utworu\r\n- dodany system misji ze sledzeniem
+    postepow\r\n- dodany ekwipunek postaci\r\n- dodany sklep z mozliwoscia kupna
+    przedmiotu za monety zdobyte w grze\r\n- szczegolowo wymodelowana mapa wraz z
+    animacjami\r\n- udzwiekowanienie 3D sceny\r\n- dodano skrzynki z monetami\r\n-
+    dodano przeciwnika wraz z animacjami\r\n- poprawiona animacja postaci\r\n- dodana
+    animacja obrotu kostka z losowaniem ruchu\r\n- dodano markery ulatwiajace rozgrywke\r\n-
+    dodano podpowiedzi dla gracza\r\n- dodano system czasteczkowy imitujacy ogien
+    i dym\r\n- system walki oparty na kartach oraz nagroda za wygranie walki\r\n-
+    dodany system rejestracji progresu gracza podczas rozgrywki potrzebny do zapisu
+    gry oraz aktualizacji mapy\r\n- dodany system zapisu rozgrywki wraz z calym postepem
+    gry\r\n- poprawki graficzne stylu UI\r\n- dodano PP filter oraz poprawiono ustawienia
+    graficzne\r\n- dodano system odradzania oraz \u015Bmierci gracza\r\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
@@ -6242,7 +6274,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1247351321
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6309,7 +6341,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.39215687}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.8627451}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -7921,7 +7953,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.392}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.8627451}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -13008,7 +13040,7 @@ PrefabInstance:
       objectReference: {fileID: 1044694071}
     - target: {fileID: 7796952324856538576, guid: fb969f87d6229ce4da25fa5e87950f49, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7796952324856538576, guid: fb969f87d6229ce4da25fa5e87950f49, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -13033,7 +13065,7 @@ PrefabInstance:
     - target: {fileID: 7796952324856538576, guid: fb969f87d6229ce4da25fa5e87950f49, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
       value: 
-      objectReference: {fileID: 490545404}
+      objectReference: {fileID: 374416572}
     - target: {fileID: 7796952324856538576, guid: fb969f87d6229ce4da25fa5e87950f49, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
@@ -13056,7 +13088,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7796952324856538576, guid: fb969f87d6229ce4da25fa5e87950f49, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
-      value: Play
+      value: turnFalse
       objectReference: {fileID: 0}
     - target: {fileID: 7796952324856538576, guid: fb969f87d6229ce4da25fa5e87950f49, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
@@ -13068,7 +13100,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7796952324856538576, guid: fb969f87d6229ce4da25fa5e87950f49, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
-      value: UnityEngine.AudioSource, UnityEngine
+      value: HasPlayerLost, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 7796952324856538576, guid: fb969f87d6229ce4da25fa5e87950f49, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
@@ -13132,7 +13164,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9200593714156137256, guid: fb969f87d6229ce4da25fa5e87950f49, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 9200593714156137256, guid: fb969f87d6229ce4da25fa5e87950f49, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -13157,7 +13189,7 @@ PrefabInstance:
     - target: {fileID: 9200593714156137256, guid: fb969f87d6229ce4da25fa5e87950f49, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
       value: 
-      objectReference: {fileID: 490545404}
+      objectReference: {fileID: 374416572}
     - target: {fileID: 9200593714156137256, guid: fb969f87d6229ce4da25fa5e87950f49, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_CallState
       value: 2
@@ -13172,7 +13204,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9200593714156137256, guid: fb969f87d6229ce4da25fa5e87950f49, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
-      value: Play
+      value: turnFalse
       objectReference: {fileID: 0}
     - target: {fileID: 9200593714156137256, guid: fb969f87d6229ce4da25fa5e87950f49, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
@@ -13184,7 +13216,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9200593714156137256, guid: fb969f87d6229ce4da25fa5e87950f49, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
-      value: UnityEngine.AudioSource, UnityEngine
+      value: HasPlayerLost, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 9200593714156137256, guid: fb969f87d6229ce4da25fa5e87950f49, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
@@ -14612,3 +14644,5 @@ SceneRoots:
   - {fileID: 1811598076}
   - {fileID: 773743685}
   - {fileID: 163406575}
+  - {fileID: 230639652}
+  - {fileID: 374416573}

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using GG;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -7,6 +8,7 @@ using UnityEngine.UI;
 public class PauseMenuScript : MonoBehaviour
 {
     bool gamePaused = false;
+    public BattleManager battleManager;
     [SerializeField] GameObject pauseMenu;
     [SerializeField] GameObject hud;
     [SerializeField] TileSelector tileSelector;
@@ -104,14 +106,24 @@ public class PauseMenuScript : MonoBehaviour
 
     public void Surrender()
     {
-        SceneManager.LoadScene("SampleScene");
+        if (battleManager != null)
+        {
+            battleManager.currentPlayerHealth = -1;
+            battleManager.CheckPlayerHealth();
+        }
+        else
+        {
+            Debug.LogError("Referencja do BattleManager nie zosta³a ustawiona.");
+        }
+
         Time.timeScale = 1;
         gamePaused = false;
         pauseMenu.SetActive(false);
 
-        EnableButtons(); // Przywróæ interaktywnoœæ przycisków
-        ResumeAudio(); // Wznowienie dŸwiêków
+        EnableButtons();
+        ResumeAudio();
     }
+
 
     // Funkcja do przywrócenia interaktywnoœci przycisków
     private void EnableButtons()

@@ -8,6 +8,7 @@ using UnityEngine.Tilemaps;
 
 public class TileSelector : MonoBehaviour
 {
+    private readonly List<Tile> selectedTiles = new();
     public GameObject character;
     public Animator characterAnimator;
     public float clickResetTime = 3f;
@@ -23,8 +24,6 @@ public class TileSelector : MonoBehaviour
     public int maxSteps;
 
     [SerializeField] private MapStateSaveSystem saveSystem;
-
-    private readonly List<Tile> selectedTiles = new();
     public Tile startingTile;
     public Tilemap tilemapGround;
     public Tilemap tilemapOverGround;
@@ -38,10 +37,8 @@ public class TileSelector : MonoBehaviour
 
     private void Awake()
     {
-
         if (PlayerInfo.Instance.hasGameStarted) saveSystem.LoadMapState();
 
-        
 
         if (PlayerInfo.Instance.battleJustLost)
         {
@@ -54,8 +51,6 @@ public class TileSelector : MonoBehaviour
             RestorePlayerPosition();
             CheckEnemyUnderPlayer();
         }
-
-
     }
 
     private void OnEnable()
@@ -84,16 +79,12 @@ public class TileSelector : MonoBehaviour
         {
             var enemy = hit.collider.GetComponent<Enemy>();
             if (enemy != null)
-            {
-                
                 if (!PlayerInfo.Instance.battleJustLost)
                 {
                     saveSystem.AddEntity(enemy.transform.position, "enemy");
                     Debug.Log($"Enemy {enemy.name} found under the player.");
                     StartCoroutine(HandleEnemyDead(enemy));
                 }
-                
-            }
         }
     }
 
@@ -212,22 +203,16 @@ public class TileSelector : MonoBehaviour
             : tile.IsAdjacent(selectedTiles[selectedTiles.Count - 1]);
 
         if (isAdjacent)
-        {
             //Debug.Log("Pole przyleg³e: " + tile.name);
-
             if (!tile.HasObstacle() && tile.IsAvailableForSelection)
             {
                 tile.Highlight(Color.cyan);
                 selectedTiles.Add(tile);
                 //Debug.Log("Pole zaznaczone: " + tile.name);
             }
-            //Debug.Log("Pole ma przeszkodê lub jest niedostêpne: " + tile.name);
-        }
-        else
-        {
-            //Debug.Log("Pole nie jest przyleg³e do ostatniego zaznaczonego.");
-        }
 
+        //Debug.Log("Pole ma przeszkodê lub jest niedostêpne: " + tile.name);
+        //Debug.Log("Pole nie jest przyleg³e do ostatniego zaznaczonego.");
         UpdateTileHighlights();
     }
 
@@ -298,13 +283,9 @@ public class TileSelector : MonoBehaviour
     {
         Debug.Log("Rozpoczynanie walki z przeciwnikiem");
 
-        if (character != null)
-        {
-            PlayerInfo.Instance.PlayerPosition = character.transform.position;
-            //Debug.Log("Zapisano pozycjê gracza");
-        }
+        if (character != null) PlayerInfo.Instance.PlayerPosition = character.transform.position;
+        //Debug.Log("Zapisano pozycjê gracza");
 
-        
         GameManager.Instance.SetCurrentEnemy(enemy);
         saveSystem.SaveCurrentState();
         SceneManager.LoadScene("Fight");
@@ -315,10 +296,8 @@ public class TileSelector : MonoBehaviour
         if (PlayerInfo.Instance != null)
         {
             if (character != null && PlayerInfo.Instance.PlayerPosition != Vector3.zero)
-            {
                 character.transform.position = PlayerInfo.Instance.PlayerPosition;
-                //Debug.Log($"ustawiono pozycjê gracza na {PlayerInfo.Instance.PlayerPosition}");
-            }
+            //Debug.Log($"ustawiono pozycjê gracza na {PlayerInfo.Instance.PlayerPosition}");
         }
         else
         {
@@ -354,7 +333,6 @@ public class TileSelector : MonoBehaviour
                 startingTile = tile;
                 Debug.Log($"starting tile ustawiony na: {tile.transform.position}");
             }
-                
         }
     }
 
@@ -436,10 +414,8 @@ public class TileSelector : MonoBehaviour
 
                     var shop = hit.collider.GetComponent<Shop>();
                     if (shop != null)
-                    {
                         //Debug.Log($"Znaleziono sklep na kafelku {tile.name}.");
                         shop.OpenShop();
-                    }
                 }
                 //Debug.Log($"Brak obiektu na kafelku {tile.name}. Przechodzê do kolejnego.");
             }

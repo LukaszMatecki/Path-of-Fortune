@@ -76,8 +76,12 @@ public class GameLoader : MonoBehaviour
 
 
         if (coinsText != null)
+        {
             coinsText.text = saveData.playerCoins.ToString();
-        //Debug.Log($"Monety ustawione na: {saveData.playerCoins}");
+            PlayerManager.Instance.coins = saveData.playerCoins;
+            //Debug.Log($"Monety ustawione na: {saveData.playerCoins}");
+        }
+
         else
             Debug.LogWarning("Nie przypisano obiektu tekstu do wyœwietlania monet!");
 

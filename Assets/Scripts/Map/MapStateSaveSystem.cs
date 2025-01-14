@@ -250,11 +250,11 @@ public class MapStateSaveSystem : MonoBehaviour
 
                 for (var i = 0; i < saveData.enemies.Count; i++)
                 {
-                    if (i == saveData.enemies.Count - 1)
-                    {
-                        Debug.Log($"Ignoring last added enemy at {saveData.enemies[i]}.");
-                        continue;
-                    }
+                    //if (i == saveData.enemies.Count - 1)
+                    //{
+                    //    Debug.Log($"Ignoring last added enemy at {saveData.enemies[i]}.");
+                    //    continue;
+                    //}
 
                     var enemyPosition = saveData.enemies[i];
                     var rayOrigin = new Vector3(enemyPosition.x, enemyPosition.y + 30f, enemyPosition.z);

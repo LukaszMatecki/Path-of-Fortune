@@ -17,7 +17,7 @@ namespace GG
         private List<Card> currentDeck = new();
 
         private Card currentEnemyCard;
-        private int currentPlayerHealth;
+        public int currentPlayerHealth;
         [SerializeField] private GameObject EndTurnButton;
         public Transform EnemyCardContainer;
         private List<Card> enemyCurrentDeck = new();
@@ -364,6 +364,36 @@ namespace GG
                 SceneManager.LoadScene("SampleScene");
             }
         }
+
+        public void CheckPlayerHealth()
+        {
+            if (currentPlayerHealth <= 0)
+            {
+                Debug.Log("Gracz zosta³ pokonany!");
+
+                PlayerInfo.Instance.currentLives -= 1;
+                PlayerInfo.Instance.battleJustLost = true;
+                if (activeHeartsModifier != null)
+                {
+                    activeHeartsModifier.DecreaseActiveHearts();
+                }
+                else
+                {
+                    Debug.LogError("ActiveHeartsModifier is not assigned in the Inspector.");
+                }
+                Debug.Log($"battlejustlost state: {PlayerInfo.Instance.battleJustLost}");
+                if (PlayerInfo.Instance.currentLives < 0)
+                {
+                    PlayerInfo.Instance.hasPlayerLost = true;
+                    SceneManager.LoadScene("MainMenu");
+                }
+                else
+                {
+                    SceneManager.LoadScene("SampleScene");
+                }
+            }
+        }
+
 
         private void UpdatePlayerHealthText()
         {

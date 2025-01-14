@@ -10,10 +10,15 @@ public class GameInitialization : MonoBehaviour
     private void Awake()
     {
         
+
         a = Path.Combine(Application.persistentDataPath, "Saves");
         saveDirectory = Path.Combine(a, "tempSave");
         var saveFilePath = Path.Combine(saveDirectory, "map_state.json");
-
+        if (PlayerInfo.Instance != null)
+        {
+            PlayerInfo.Instance.battleJustLost = true;
+        }
+        
         // Jeœli plik zapisu istnieje, usuñ go
         if (File.Exists(saveFilePath)) DeleteSaveFile(saveFilePath);
     }

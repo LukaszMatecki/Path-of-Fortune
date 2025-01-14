@@ -8,7 +8,7 @@ public class PlayerInfo : MonoBehaviour
     [SerializeField] private Animator enemyAnimator; 
     public static PlayerInfo Instance { get; private set; }
     public bool hasGameStarted = false;
-    public Vector3 PlayerPosition { get; set; } = Vector3.zero;
+    public Vector3 PlayerPosition = Vector3.zero;
     public bool hasPlayerLost = false;
     public bool battleJustLost = false;
     

@@ -2063,6 +2063,10 @@ PrefabInstance:
       propertyPath: hud
       value: 
       objectReference: {fileID: 558723972}
+    - target: {fileID: 7826975293796667074, guid: 407d45ff385d23e469075f241ea6585e, type: 3}
+      propertyPath: battleManager
+      value: 
+      objectReference: {fileID: 1319495314}
     - target: {fileID: 7887722919958021979, guid: 407d45ff385d23e469075f241ea6585e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 3
@@ -3971,6 +3975,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CardPrefab: {fileID: 213386131319227055, guid: c0da95b8f3dd759499300c71df506bea, type: 3}
+  currentPlayerHealth: 0
   EndTurnButton: {fileID: 972889502}
   EnemyCardContainer: {fileID: 1360623104}
   EnemyHealthText: {fileID: 195485293}
