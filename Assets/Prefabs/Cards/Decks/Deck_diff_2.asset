@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Deck_diff_2
   m_EditorClassIdentifier: 
   cards:
-  - {fileID: 11400000, guid: bb55aa457e9177449bc06caa52f20dd3, type: 2}
-  - {fileID: 11400000, guid: bb55aa457e9177449bc06caa52f20dd3, type: 2}
-  - {fileID: 11400000, guid: bb55aa457e9177449bc06caa52f20dd3, type: 2}
-  - {fileID: 11400000, guid: bb55aa457e9177449bc06caa52f20dd3, type: 2}
-  - {fileID: 11400000, guid: 8511eba2c05736c4fa20de6e8c50c982, type: 2}
+  - {fileID: 11400000, guid: 01e10233e17e97a47970f1bb95aac7e6, type: 2}
+  - {fileID: 11400000, guid: 5917c4b3557ab9f4f833ed2d431ad49d, type: 2}
+  - {fileID: 11400000, guid: fa35cfc3d7ede1e4ea7ed451f4272713, type: 2}
+  - {fileID: 11400000, guid: 3eee62a71a1510f42af8d40c62a8eb0c, type: 2}
+  - {fileID: 11400000, guid: 3448b288cabff964ba9bd0c1d7126a11, type: 2}
