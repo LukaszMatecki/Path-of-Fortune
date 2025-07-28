@@ -1,0 +1,1 @@
+Path of Fortune to prosta gra planszowa stworzona jako projekt grupowy w środowisku Unity, z funkcjonalnością zaprogramowaną w języku C#. Gra służy jako demonstracja umiejętności programistycznych i projektowych - gracze rzucają kostką i poruszają się pionkiem po planszy, eksplorując podstawowe mechaniki planszowe.
